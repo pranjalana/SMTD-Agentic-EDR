@@ -1,0 +1,328 @@
+[
+  {
+    "id": "ACT-EE0AD499",
+    "detectionId": "DET-EE0AD499",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 11424)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:51:00Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:51:00Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 11424) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:51:00Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:51:00Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-8139EE99",
+    "detectionId": "DET-8139EE99",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 12544)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:50:58Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:50:58Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 12544) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:50:58Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:50:58Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-4994B491",
+    "detectionId": "DET-4994B491",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 5060)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:50:45Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:50:45Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 5060) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:50:45Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:50:45Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-8176B92E",
+    "detectionId": "DET-8176B92E",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 11776)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:50:43Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:50:43Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 11776) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:50:43Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:50:43Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-52E0140B",
+    "detectionId": "DET-52E0140B",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 5000)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "Rejected",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:43:42Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:43:42Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 5000) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:43:42Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:43:42Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      },
+      {
+        "at": "2026-10-26T06:50:20Z",
+        "actor": "human",
+        "event": "rejected"
+      }
+    ],
+    "decidedBy": "human"
+  },
+  {
+    "id": "ACT-F36D3E24",
+    "detectionId": "DET-F36D3E24",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 10844)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:43:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:43:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 10844) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:43:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:43:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-463141D6",
+    "detectionId": "DET-463141D6",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 12184)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:43:31Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:43:31Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 12184) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:43:31Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:43:31Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-22B1E051",
+    "detectionId": "DET-22B1E051",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 10800)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:43:29Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:43:29Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 10800) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:43:29Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:43:29Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-541C4B47",
+    "detectionId": "DET-541C4B47",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 2300)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:42:56Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:42:56Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 2300) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:42:56Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:42:56Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-E3A52368",
+    "detectionId": "DET-E3A52368",
+    "endpointId": "WIN11-LAB-01",
+    "hostname": "WIN11-LAB-01",
+    "source": "live",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 6532)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:42:54Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:42:54Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 6532) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:42:54Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:42:54Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  }
+]

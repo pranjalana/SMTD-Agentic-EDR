@@ -1,0 +1,2844 @@
+[
+  {
+    "id": "TUN-EE5791EB",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "01566s-win16-ir.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "124 events from 01566s-win16-ir.threebeesco.com, 4 of them process creations, but none for this setting. Recent activity that ran unobserved: dllhost.exe, werfault.exe, wermgr.exe",
+      "eventIds": [
+        "EVT-SYS1-9C75F4",
+        "EVT-SYS1-5A69EB",
+        "EVT-SYS1-E42F1F"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-D065F0D5",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "01566s-win16-ir.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "124 events from 01566s-win16-ir.threebeesco.com, 4 of them process creations, but none for this setting. Recent activity that ran unobserved: dllhost.exe, werfault.exe, wermgr.exe",
+      "eventIds": [
+        "EVT-SYS1-9C75F4",
+        "EVT-SYS1-5A69EB",
+        "EVT-SYS1-E42F1F"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-ED032014",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "02694w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "17 events from 02694w-win10.threebeesco.com, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: pocacct.exe, spoolsv.exe",
+      "eventIds": [
+        "EVT-SYS1-43942E",
+        "EVT-SYS1-23864A"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-254624E8",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "02694w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "17 events from 02694w-win10.threebeesco.com, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: pocacct.exe, spoolsv.exe",
+      "eventIds": [
+        "EVT-SYS1-43942E",
+        "EVT-SYS1-23864A"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-4240C0C6",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "04246w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "2 events from 04246w-win10.threebeesco.com, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: psexesvc.exe",
+      "eventIds": [
+        "EVT-SYS1-0208CE"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-5CECA2B1",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "04246w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "2 events from 04246w-win10.threebeesco.com, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: psexesvc.exe",
+      "eventIds": [
+        "EVT-SYS1-0208CE"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-75A4F660",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "04246w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "2 events from 04246w-win10.threebeesco.com, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: psexesvc.exe",
+      "eventIds": [
+        "EVT-SYS1-0208CE"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-5B94B94F",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "04246w-win10.threebeesco.com",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "2 events from 04246w-win10.threebeesco.com, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: psexesvc.exe",
+      "eventIds": [
+        "EVT-SYS1-0208CE"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-0F8934C3",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2012r2srv.maincorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "3 events from 2012r2srv.maincorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4661-B136FC",
+        "EVT-4765-4A9273",
+        "EVT-4658-F67AEB"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-EA8B1AB1",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2012r2srv.maincorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "3 events from 2012r2srv.maincorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4661-B136FC",
+        "EVT-4765-4A9273",
+        "EVT-4658-F67AEB"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-DEEC57E8",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2012r2srv.maincorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "3 events from 2012r2srv.maincorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4661-B136FC",
+        "EVT-4765-4A9273",
+        "EVT-4658-F67AEB"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-CB76AFE6",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2012r2srv.maincorp.local",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "3 events from 2012r2srv.maincorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4661-B136FC",
+        "EVT-4765-4A9273",
+        "EVT-4658-F67AEB"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-1C685BC3",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2016dc.hqcorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "1 events from 2016dc.hqcorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4794-178411"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-9C3B6E56",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2016dc.hqcorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "1 events from 2016dc.hqcorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4794-178411"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-8BEED2BD",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2016dc.hqcorp.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "1 events from 2016dc.hqcorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4794-178411"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-87995513",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "2016dc.hqcorp.local",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "1 events from 2016dc.hqcorp.local, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4794-178411"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-F96695FF",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DC1.insecurebank.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "118 events from DC1.insecurebank.local, 8 of them process creations, but none for this setting. Recent activity that ran unobserved: ipconfig.exe, osk.exe, whoami.exe",
+      "eventIds": [
+        "EVT-SYS1-6DCD93",
+        "EVT-SYS1-7E94BF",
+        "EVT-SYS1-0B329D"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-0A16A243",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DC1.insecurebank.local",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "118 events from DC1.insecurebank.local, 8 of them process creations, but none for this setting. Recent activity that ran unobserved: ipconfig.exe, osk.exe, whoami.exe",
+      "eventIds": [
+        "EVT-SYS1-6DCD93",
+        "EVT-SYS1-7E94BF",
+        "EVT-SYS1-0B329D"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-88AC9AF1",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-NTSSLJD",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "530 events from DESKTOP-NTSSLJD, 3 of them process creations, but none for this setting. Recent activity that ran unobserved: [1]consent.exe, akagi64.exe, cmd.exe",
+      "eventIds": [
+        "EVT-SYS1-B7D170",
+        "EVT-SYS1-C524A6",
+        "EVT-SYS1-59DE41"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-8FE656CA",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-NTSSLJD",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "530 events from DESKTOP-NTSSLJD, 3 of them process creations, but none for this setting. Recent activity that ran unobserved: [1]consent.exe, akagi64.exe, cmd.exe",
+      "eventIds": [
+        "EVT-SYS1-B7D170",
+        "EVT-SYS1-C524A6",
+        "EVT-SYS1-59DE41"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-018C3EA9",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-PIU87N6",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-PIU87N6, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: lsass.exe, rdrleakdiag.exe",
+      "eventIds": [
+        "EVT-SYS1-37CB3E",
+        "EVT-SYS1-247E52"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-5DF14DBB",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-PIU87N6",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-PIU87N6, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: lsass.exe, rdrleakdiag.exe",
+      "eventIds": [
+        "EVT-SYS1-37CB3E",
+        "EVT-SYS1-247E52"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-95560B7C",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-PIU87N6",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-PIU87N6, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: lsass.exe, rdrleakdiag.exe",
+      "eventIds": [
+        "EVT-SYS1-37CB3E",
+        "EVT-SYS1-247E52"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-C0C5800B",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-PIU87N6",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-PIU87N6, 2 of them process creations, but none for this setting. Recent activity that ran unobserved: lsass.exe, rdrleakdiag.exe",
+      "eventIds": [
+        "EVT-SYS1-37CB3E",
+        "EVT-SYS1-247E52"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-ADDFF821",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-RIPCLIP",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "6 events from DESKTOP-RIPCLIP, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: dyxxur4gx.exe",
+      "eventIds": [
+        "EVT-SYS1-6174B1"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-C2CDCEA1",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-RIPCLIP",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "6 events from DESKTOP-RIPCLIP, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: dyxxur4gx.exe",
+      "eventIds": [
+        "EVT-SYS1-6174B1"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-E9CE80E6",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-RIPCLIP",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "6 events from DESKTOP-RIPCLIP, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: dyxxur4gx.exe",
+      "eventIds": [
+        "EVT-SYS1-6174B1"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-6CF6B4F7",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-TTEQ6PR",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-TTEQ6PR, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: spoolfool.exe",
+      "eventIds": [
+        "EVT-SYS1-FAAFC4"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-5F395D56",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-TTEQ6PR",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-TTEQ6PR, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: spoolfool.exe",
+      "eventIds": [
+        "EVT-SYS1-FAAFC4"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-14B10AAC",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "DESKTOP-TTEQ6PR",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "4 events from DESKTOP-TTEQ6PR, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: spoolfool.exe",
+      "eventIds": [
+        "EVT-SYS1-FAAFC4"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-D7709324",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "ICORP-DC.internal.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "8 events from ICORP-DC.internal.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-91BD8E",
+        "EVT-5136-72F642",
+        "EVT-5136-1525F7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-AE69AC6A",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "ICORP-DC.internal.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "8 events from ICORP-DC.internal.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-91BD8E",
+        "EVT-5136-72F642",
+        "EVT-5136-1525F7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-C0031AB3",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "ICORP-DC.internal.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "8 events from ICORP-DC.internal.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-91BD8E",
+        "EVT-5136-72F642",
+        "EVT-5136-1525F7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-D0197596",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "ICORP-DC.internal.corp",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "8 events from ICORP-DC.internal.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-91BD8E",
+        "EVT-5136-72F642",
+        "EVT-5136-1525F7"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-E6F73D4C",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "IEWIN7",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "769 events from IEWIN7, 279 of them process creations, but none for this setting. Recent activity that ran unobserved: cmd.exe, powershell.exe, python.exe",
+      "eventIds": [
+        "EVT-SYS1-4F826D",
+        "EVT-SYS1-B20A08",
+        "EVT-SYS1-7F17E2"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-861A941C",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "IEWIN7",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "769 events from IEWIN7, 279 of them process creations, but none for this setting. Recent activity that ran unobserved: cmd.exe, powershell.exe, python.exe",
+      "eventIds": [
+        "EVT-SYS1-4F826D",
+        "EVT-SYS1-B20A08",
+        "EVT-SYS1-7F17E2"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-61416AF7",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "LAPTOP-JU4M3I0E",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "29625 events from LAPTOP-JU4M3I0E, 26 of them process creations, but none for this setting. Recent activity that ran unobserved: byeintegrity5-uac.exe, cmd.exe, taskhostw.exe",
+      "eventIds": [
+        "EVT-SYS1-F2AAB9",
+        "EVT-SYS1-9A72D2",
+        "EVT-SYS1-9C9C02"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-0AAA7110",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "LAPTOP-JU4M3I0E",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "29625 events from LAPTOP-JU4M3I0E, 26 of them process creations, but none for this setting. Recent activity that ran unobserved: byeintegrity5-uac.exe, cmd.exe, taskhostw.exe",
+      "eventIds": [
+        "EVT-SYS1-F2AAB9",
+        "EVT-SYS1-9A72D2",
+        "EVT-SYS1-9C9C02"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-EDDE06F2",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "MSEDGEWIN10",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "3961 events from MSEDGEWIN10, 967 of them process creations, but none for this setting. Recent activity that ran unobserved: mspaint.exe, psexecprivesc.exe, psexesvc.exe",
+      "eventIds": [
+        "EVT-SYS1-5571AE",
+        "EVT-SYS1-4A5FFF",
+        "EVT-SYS1-F36043"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-EE86C946",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC01.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "1591 events from PC01.example.corp, 209 of them process creations, but none for this setting. Recent activity that ran unobserved: slui.exe, ui0detect.exe, wmpnetwk.exe",
+      "eventIds": [
+        "EVT-SYS1-DC4EDF",
+        "EVT-SYS1-707A12",
+        "EVT-SYS1-AA614E"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-BAC36D7C",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC01.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "1591 events from PC01.example.corp, 209 of them process creations, but none for this setting. Recent activity that ran unobserved: slui.exe, ui0detect.exe, wmpnetwk.exe",
+      "eventIds": [
+        "EVT-SYS1-DC4EDF",
+        "EVT-SYS1-707A12",
+        "EVT-SYS1-AA614E"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-922A12F2",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC02.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "18 events from PC02.example.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-57256C",
+        "EVT-4624-6A545E",
+        "EVT-4624-9CB2A7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-C5ADE2EF",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC02.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "18 events from PC02.example.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-57256C",
+        "EVT-4624-6A545E",
+        "EVT-4624-9CB2A7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-F639BE1A",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC02.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "18 events from PC02.example.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-57256C",
+        "EVT-4624-6A545E",
+        "EVT-4624-9CB2A7"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-A1EC5AEC",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC02.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "18 events from PC02.example.corp, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-4624-57256C",
+        "EVT-4624-6A545E",
+        "EVT-4624-9CB2A7"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-E5B8CC5F",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC04.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "37 events from PC04.example.corp, 14 of them process creations, but none for this setting. Recent activity that ran unobserved: scrcons.exe, ui0detect.exe, wmighost.exe",
+      "eventIds": [
+        "EVT-SYS1-F05C66",
+        "EVT-SYS1-863D73",
+        "EVT-SYS1-4EF17E"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-E987DC46",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC04.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "37 events from PC04.example.corp, 14 of them process creations, but none for this setting. Recent activity that ran unobserved: scrcons.exe, ui0detect.exe, wmighost.exe",
+      "eventIds": [
+        "EVT-SYS1-F05C66",
+        "EVT-SYS1-863D73",
+        "EVT-SYS1-4EF17E"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-C3E1403A",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "PC04.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "37 events from PC04.example.corp, 14 of them process creations, but none for this setting. Recent activity that ran unobserved: scrcons.exe, ui0detect.exe, wmighost.exe",
+      "eventIds": [
+        "EVT-SYS1-F05C66",
+        "EVT-SYS1-863D73",
+        "EVT-SYS1-4EF17E"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-54BAAB2D",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "User-PC",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "351 events from User-PC, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-1042-BD1BF4",
+        "EVT-1040-53057C",
+        "EVT-1042-F7577F"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-AB3A1717",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "User-PC",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "351 events from User-PC, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-1042-BD1BF4",
+        "EVT-1040-53057C",
+        "EVT-1042-F7577F"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-CAC732D2",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "User-PC",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "351 events from User-PC, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-1042-BD1BF4",
+        "EVT-1040-53057C",
+        "EVT-1042-F7577F"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-D08D7BFA",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "User-PC",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "351 events from User-PC, 0 of them process creations, but none for this setting. Recent activity that ran unobserved: (no process events)",
+      "eventIds": [
+        "EVT-1042-BD1BF4",
+        "EVT-1040-53057C",
+        "EVT-1042-F7577F"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-1A15FB96",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "WIN-77LTAPHIQ1R.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "125 events from WIN-77LTAPHIQ1R.example.corp, 6 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, wmiprvse.exe",
+      "eventIds": [
+        "EVT-4688-A0DE94",
+        "EVT-4688-D0344B",
+        "EVT-4688-CB13A4"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-C79B1E04",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "WIN-77LTAPHIQ1R.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "125 events from WIN-77LTAPHIQ1R.example.corp, 6 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, wmiprvse.exe",
+      "eventIds": [
+        "EVT-4688-A0DE94",
+        "EVT-4688-D0344B",
+        "EVT-4688-CB13A4"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-72E111F1",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "WIN-77LTAPHIQ1R.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "125 events from WIN-77LTAPHIQ1R.example.corp, 6 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, wmiprvse.exe",
+      "eventIds": [
+        "EVT-4688-A0DE94",
+        "EVT-4688-D0344B",
+        "EVT-4688-CB13A4"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-22B92BFD",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "WIN-77LTAPHIQ1R.example.corp",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "125 events from WIN-77LTAPHIQ1R.example.corp, 6 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, wmiprvse.exe",
+      "eventIds": [
+        "EVT-4688-A0DE94",
+        "EVT-4688-D0344B",
+        "EVT-4688-CB13A4"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-CB77DAE3",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "alice.insecurebank.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "31 events from alice.insecurebank.local, 3 of them process creations, but none for this setting. Recent activity that ran unobserved: andrewspecial.exe, outflank-dumpert.exe, rundll32.exe",
+      "eventIds": [
+        "EVT-SYS1-138454",
+        "EVT-SYS1-2C37DF",
+        "EVT-SYS1-DADE6D"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-4EB74D6A",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "alice.insecurebank.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "31 events from alice.insecurebank.local, 3 of them process creations, but none for this setting. Recent activity that ran unobserved: andrewspecial.exe, outflank-dumpert.exe, rundll32.exe",
+      "eventIds": [
+        "EVT-SYS1-138454",
+        "EVT-SYS1-2C37DF",
+        "EVT-SYS1-DADE6D"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-1C0B5D98",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "alice.insecurebank.local",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "31 events from alice.insecurebank.local, 3 of them process creations, but none for this setting. Recent activity that ran unobserved: andrewspecial.exe, outflank-dumpert.exe, rundll32.exe",
+      "eventIds": [
+        "EVT-SYS1-138454",
+        "EVT-SYS1-2C37DF",
+        "EVT-SYS1-DADE6D"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-A93B07CF",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "win10.ecorp.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "10 events from win10.ecorp.com, 4 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, explorer.exe, win32calc.exe",
+      "eventIds": [
+        "EVT-SYS1-6D4908",
+        "EVT-SYS1-440CB9",
+        "EVT-SYS1-EF5954"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-2C503FB5",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "win10.ecorp.com",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "10 events from win10.ecorp.com, 4 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, explorer.exe, win32calc.exe",
+      "eventIds": [
+        "EVT-SYS1-6D4908",
+        "EVT-SYS1-440CB9",
+        "EVT-SYS1-EF5954"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-78CC202C",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "win10.ecorp.com",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "10 events from win10.ecorp.com, 4 of them process creations, but none for this setting. Recent activity that ran unobserved: calc.exe, explorer.exe, win32calc.exe",
+      "eventIds": [
+        "EVT-SYS1-6D4908",
+        "EVT-SYS1-440CB9",
+        "EVT-SYS1-EF5954"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  },
+  {
+    "id": "TUN-F6C68B93",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "wind10.winlab.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon network connection events (Event ID 3)",
+    "evidence": {
+      "observation": "11 events from wind10.winlab.local, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: notepad.exe",
+      "eventIds": [
+        "EVT-4688-5C85D0"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": true,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic.",
+    "riskLevel": "Medium",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.001",
+      "T1021.001",
+      "T1105"
+    ]
+  },
+  {
+    "id": "TUN-8DA734DC",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "wind10.winlab.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon DNS query events (Event ID 22)",
+    "evidence": {
+      "observation": "11 events from wind10.winlab.local, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: notepad.exe",
+      "eventIds": [
+        "EVT-4688-5C85D0"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": true,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1071.004",
+      "T1568",
+      "T1566.002"
+    ]
+  },
+  {
+    "id": "TUN-DFC7B524",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "wind10.winlab.local",
+    "source": "simulated",
+    "visibilityGap": "No Sysmon registry events (Event IDs 12-14)",
+    "evidence": {
+      "observation": "11 events from wind10.winlab.local, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: notepad.exe",
+      "eventIds": [
+        "EVT-4688-5C85D0"
+      ]
+    },
+    "proposedChange": {
+      "system": "Sysmon",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": true,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security setting tampering become visible. Scoped to those keys to keep volume low.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1547.001",
+      "T1112",
+      "T1546.012"
+    ]
+  },
+  {
+    "id": "TUN-01FE92B2",
+    "timestamp": "2026-10-26T06:39:55Z",
+    "hostId": "wind10.winlab.local",
+    "source": "simulated",
+    "visibilityGap": "No PowerShell script block events (Event ID 4104)",
+    "evidence": {
+      "observation": "11 events from wind10.winlab.local, 1 of them process creations, but none for this setting. Recent activity that ran unobserved: notepad.exe",
+      "eventIds": [
+        "EVT-4688-5C85D0"
+      ]
+    },
+    "proposedChange": {
+      "system": "AuditPolicy",
+      "before": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": false,
+        "managementChannel": true,
+        "agentService": true
+      },
+      "after": {
+        "networkConnections": false,
+        "dnsQueries": false,
+        "registryChanges": false,
+        "powerShellScriptBlock": true,
+        "managementChannel": true,
+        "agentService": true
+      }
+    },
+    "justification": "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections and obfuscated or encoded commands can be read.",
+    "riskLevel": "Low",
+    "status": "Proposed",
+    "validationResult": null,
+    "rollbackSnapshotId": "not taken (proposal only)",
+    "techniquesNowVisible": [
+      "T1059.001",
+      "T1027"
+    ]
+  }
+]

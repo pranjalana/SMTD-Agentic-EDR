@@ -1,0 +1,898 @@
+[
+  {
+    "id": "ACT-0C0A8BDD",
+    "detectionId": "DET-0C0A8BDD",
+    "endpointId": "MSEDGEWIN10",
+    "hostname": "MSEDGEWIN10",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "cmd.exe (PID 1680)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on cmd.exe (PID 1680) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-8B50834C",
+    "detectionId": "DET-8B50834C",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "voice_mail.msg.exe (PID 1532)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on voice_mail.msg.exe (PID 1532) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-BFA283E9",
+    "detectionId": "DET-BFA283E9",
+    "endpointId": "PC04.example.corp",
+    "hostname": "PC04.example.corp",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "taskmgr.exe (PID 3576)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on taskmgr.exe (PID 3576) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-C2F40EBD",
+    "detectionId": "DET-C2F40EBD",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "andrewspecial.exe (PID 3552)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on andrewspecial.exe (PID 3552) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-045A84C0",
+    "detectionId": "DET-045A84C0",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "andrewspecial.exe (PID 3552)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on andrewspecial.exe (PID 3552) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-E441D37B",
+    "detectionId": "DET-E441D37B",
+    "endpointId": "PC04.example.corp",
+    "hostname": "PC04.example.corp",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "mimikatz.exe (PID 3588)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on mimikatz.exe (PID 3588) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-4DAD7159",
+    "detectionId": "DET-4DAD7159",
+    "endpointId": "LAPTOP-JU4M3I0E",
+    "hostname": "LAPTOP-JU4M3I0E",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "procdump.exe (PID 30256)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on procdump.exe (PID 30256) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-A992A363",
+    "detectionId": "DET-A992A363",
+    "endpointId": "LAPTOP-JU4M3I0E",
+    "hostname": "LAPTOP-JU4M3I0E",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "procdump64.exe (PID 28528)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on procdump64.exe (PID 28528) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-85DEE47C",
+    "detectionId": "DET-85DEE47C",
+    "endpointId": "LAPTOP-JU4M3I0E",
+    "hostname": "LAPTOP-JU4M3I0E",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "procdump64.exe (PID 28528)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on procdump64.exe (PID 28528) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-CF5D98F7",
+    "detectionId": "DET-CF5D98F7",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 1508)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 1508) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-DBF778AE",
+    "detectionId": "DET-DBF778AE",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "m.exe (PID 3772)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:41Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on m.exe (PID 3772) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:41Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-F08881D1",
+    "detectionId": "DET-F08881D1",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "python.exe (PID 1832)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:40Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:40Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on python.exe (PID 1832) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:40Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:40Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-72B48775",
+    "detectionId": "DET-72B48775",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 3872)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:39Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 3872) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-AFD2C4C2",
+    "detectionId": "DET-AFD2C4C2",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 2484)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:39Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 2484) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:39Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-E03D8E25",
+    "detectionId": "DET-E03D8E25",
+    "endpointId": "MSEDGEWIN10",
+    "hostname": "MSEDGEWIN10",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "ppldump.exe (PID 5016)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:38Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:38Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on ppldump.exe (PID 5016) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:38Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:38Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-A9CBD7A2",
+    "detectionId": "DET-A9CBD7A2",
+    "endpointId": "MSEDGEWIN10",
+    "hostname": "MSEDGEWIN10",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "malseclogon.exe (PID 6072)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:34Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:34Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on malseclogon.exe (PID 6072) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:34Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:34Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-B74163B7",
+    "detectionId": "DET-B74163B7",
+    "endpointId": "MSEDGEWIN10",
+    "hostname": "MSEDGEWIN10",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "rundll32.exe (PID 840)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:28Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:28Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on rundll32.exe (PID 840) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:28Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:28Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-4E4AFF6A",
+    "detectionId": "DET-4E4AFF6A",
+    "endpointId": "PC04.example.corp",
+    "hostname": "PC04.example.corp",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "procdump.exe (PID 1856)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:19Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:19Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on procdump.exe (PID 1856) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:19Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:19Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-239F4132",
+    "detectionId": "DET-239F4132",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 2584)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:05:03Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:05:03Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 2584) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:05:03Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:05:03Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-2E0041F1",
+    "detectionId": "DET-2E0041F1",
+    "endpointId": "MSEDGEWIN10",
+    "hostname": "MSEDGEWIN10",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 5840)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:52Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:52Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 5840) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:52Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:52Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-125EF1C4",
+    "detectionId": "DET-125EF1C4",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "rundll32.exe (PID 1568)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:40Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on rundll32.exe (PID 1568) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-67E31C15",
+    "detectionId": "DET-67E31C15",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "rundll32.exe (PID 1568)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:40Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on rundll32.exe (PID 1568) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-FB6BBE1A",
+    "detectionId": "DET-FB6BBE1A",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "rundll32.exe (PID 1568)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:40Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on rundll32.exe (PID 1568) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-1EAE05D9",
+    "detectionId": "DET-1EAE05D9",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "rundll32.exe (PID 1568)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:40Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on rundll32.exe (PID 1568) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:40Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-B3F55452",
+    "detectionId": "DET-B3F55452",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "outflank-dumpert.exe (PID 3572)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:27Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on outflank-dumpert.exe (PID 3572) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-53AE414A",
+    "detectionId": "DET-53AE414A",
+    "endpointId": "alice.insecurebank.local",
+    "hostname": "alice.insecurebank.local",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "outflank-dumpert.exe (PID 3572)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:27Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on outflank-dumpert.exe (PID 3572) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:27Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-D4655C4B",
+    "detectionId": "DET-D4655C4B",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 1200)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:04:13Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:04:13Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 1200) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:04:13Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:04:13Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  },
+  {
+    "id": "ACT-6FA902AA",
+    "detectionId": "DET-6FA902AA",
+    "endpointId": "IEWIN7",
+    "hostname": "IEWIN7",
+    "source": "simulated",
+    "type": "KillProcess",
+    "target": "powershell.exe (PID 1200)",
+    "riskLevel": "High",
+    "mode": "DryRun",
+    "status": "PendingApproval",
+    "rollbackAvailable": false,
+    "evidenceVerified": true,
+    "createdAt": "2026-10-26T06:00:52Z",
+    "auditLog": [
+      {
+        "at": "2026-10-26T06:00:52Z",
+        "actor": "agent",
+        "event": "proposed KillProcess on powershell.exe (PID 1200) (risk High)"
+      },
+      {
+        "at": "2026-10-26T06:00:52Z",
+        "actor": "guardrail",
+        "event": "allowlist check passed"
+      },
+      {
+        "at": "2026-10-26T06:00:52Z",
+        "actor": "policy",
+        "event": "risk High is above auto-execute limit (Low); human approval required"
+      }
+    ]
+  }
+]
