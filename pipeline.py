@@ -70,6 +70,10 @@ PROTECTED_SERVICES = {"grimreaperagent", "sysmon", "sysmon64", "sysmon64a", "eve
 PROTECTED_DESTINATIONS = {"mgmt.grimreaper.io", "localhost", "127.0.0.1", "::1"}  # + --mgmt entries
 
 VERDICT_RANK = {"Benign": 0, "NeedsMoreEvidence": 1, "Malicious": 2}
+# Console detection statuses: New / Triaged / Responded / Dismissed (derived from the action status).
+# "Responded" means a response was decided/approved; every action is still DryRun.
+DET_STATUS = {"PendingApproval": "Triaged", "BlockedByGuardrail": "Triaged", "RolledBack": "Triaged",
+              "AutoExecuted": "Responded", "Approved": "Responded", "Rejected": "Dismissed"}
 
 
 def verdict_for(conf: float) -> str:
@@ -127,6 +131,13 @@ def parse_event_xml(text: str, source: str, salt: str = ""):
     }
 
 
+def read_text_any(path: Path) -> str:
+    raw = path.read_bytes()
+    if raw[:2] in (b"\xff\xfe", b"\xfe\xff"):
+        return raw.decode("utf-16", errors="replace")
+    return raw.decode("utf-8-sig", errors="replace")
+
+
 def read_evtx_file(path: Path):
     if path.suffix.lower() == ".evtx":
         try:
@@ -140,7 +151,7 @@ def read_evtx_file(path: Path):
                 except Exception:
                     continue
     else:
-        yield from EVENT_RE.findall(path.read_text(encoding="utf-8-sig", errors="replace"))
+        yield from EVENT_RE.findall(read_text_any(path))
 
 
 def fetch_live(log: str, since_seconds: int):
@@ -467,25 +478,25 @@ def build(store: Store, cfg, decisions: dict):
         key = hashlib.sha1((f.rule + "|" + "|".join(sorted(f.evidence))).encode()).hexdigest()[:8].upper()
         verdict, reasoning, verified = triage(f, store, cfg, key)
         det_id, act_id = f"DET-{key}", f"ACT-{key}"
-        status, action_rec = "Detected", None
+        status, action_rec = "New", None
         if verdict == "Malicious" and f.action:
             risk = f.risk or DEFAULT_RISK[f.action["type"]]
             st, blocked, steps = decide(f.action, verdict, verified, risk, cfg)
             ts = iso(f.anchor["time"])
-            audit = [{"timestamp": ts, "actor": a, "message": m} for a, m in steps]
+            audit = [{"at": ts, "actor": a, "event": m} for a, m in steps]
             d = decisions.get(act_id)
             if d:
                 dts = d.get("timestamp", ts)
                 if d["decision"] == "approve" and st == "PendingApproval":
                     if blocked:
-                        audit.append({"timestamp": dts, "actor": "guardrail", "message": f"approval refused: {blocked}"})
+                        audit.append({"at": dts, "actor": "guardrail", "event": f"approval refused: {blocked}"})
                     else:
-                        st = "Approved"; audit.append({"timestamp": dts, "actor": "human", "message": "approved (executed in dry-run)"})
+                        st = "Approved"; audit.append({"at": dts, "actor": "human", "event": "approved (executed in dry-run)"})
                 elif d["decision"] == "reject" and st == "PendingApproval":
-                    st = "Rejected"; audit.append({"timestamp": dts, "actor": "human", "message": "rejected"})
+                    st = "Rejected"; audit.append({"at": dts, "actor": "human", "event": "rejected"})
                 elif d["decision"] == "rollback" and st in ("AutoExecuted", "Approved") and ROLLBACK_AVAILABLE[f.action["type"]]:
-                    st = "RolledBack"; audit.append({"timestamp": dts, "actor": "human", "message": "rolled back"})
-            status = st
+                    st = "RolledBack"; audit.append({"at": dts, "actor": "human", "event": "rolled back"})
+            status = DET_STATUS.get(st, "Triaged")
             action_rec = {
                 "id": act_id, "detectionId": det_id, "endpointId": f.anchor["host"], "type": f.action["type"],
                 "target": f.action["target"], "riskLevel": risk, "mode": "DryRun", "status": st,
@@ -506,7 +517,7 @@ def build(store: Store, cfg, decisions: dict):
     # endpoints
     eps = {}
     for e in store.events:
-        ep = eps.setdefault(e["host"], {"id": e["host"], "hostname": e["host"], "user": "", "os": "Windows",
+        ep = eps.setdefault(e["host"], {"id": e["host"], "hostname": e["host"], "user": "", "os": "Windows", "department": "", "ip": "",
                                         "protectionState": "Protected", "lastSeen": e["time"], "source": "simulated"})
         ep["lastSeen"] = max(ep["lastSeen"], e["time"])
         if e["source"] == "live": ep["source"] = "live"
@@ -521,7 +532,6 @@ def build(store: Store, cfg, decisions: dict):
         "detections": len(detections), "actions": len(actions),
         "actionsByStatus": {s: sum(1 for a in actions if a["status"] == s) for s in
                             sorted({a["status"] for a in actions})},
-        "autoExecuteUpTo": cfg.auto_up_to, "dryRun": True,
     }
     return detections, actions, endpoints, stats
 
@@ -595,7 +605,9 @@ def main():
         return selftest()
     cfg = Cfg(auto_up_to=a.auto_execute_up_to, llm=a.llm, mgmt={m.lower() for m in a.mgmt})
     if a.iocs:
-        cfg.iocs = [l.strip().lower() for l in Path(a.iocs).read_text().splitlines() if l.strip() and not l.startswith("#")]
+        if not Path(a.iocs).is_file():
+            ap.error(f"IOC file not found: {a.iocs} (create it with one domain per line)")
+        cfg.iocs = [l.strip().lower() for l in read_text_any(Path(a.iocs)).splitlines() if l.strip() and not l.startswith("#")]
     if not (a.evtx or a.live):
         ap.error("give --evtx and/or --live")
     store, out = Store(), Path(a.out)
