@@ -97,7 +97,6 @@ Coordinate changes to shared files with the team to avoid merge conflicts. Team 
 - Validate important event types and extracted fields.
 - Clarify the division of responsibility between `parser.py` and `normalizer.py`.
 - Implement and test Module 3 detection and analysis logic.
-- Continuous collection and persistent event bookmarks are not implemented in the current batch pipeline.
 
 ## 9. Security Notes
 
