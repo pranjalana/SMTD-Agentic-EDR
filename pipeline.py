@@ -8,22 +8,30 @@ Windows events -> normalise -> ATT&CK-mapped rules -> triage verdict
 Inputs (combine freely):
   --evtx PATH...   .evtx files (needs `pip install python-evtx`) or .xml files
                    containing <Event>...</Event> records. Treated as SIMULATED hosts.
-  --live           poll this machine's Windows logs with PowerShell (run as Administrator
-                   so the Security log is readable). Treated as the LIVE host.
+  --live           poll this machine's Windows logs with wevtutil (needs Administrator or
+                   membership of Event Log Readers for Security and Sysmon). Treated as the LIVE host.
 
-Outputs (in --out, default ./data): detections.json, actions.json, endpoints.json,
-stats.json. Reads approvals.json (written by serve.py) to apply human decisions.
+Outputs (in --out, default ./data): detections.json, actions.json, endpoints.json, stats.json,
+baselines.json, tuning_changes.json and runs.json, in the shape the console validates
+(sentinel-fleet-console/src/data/fileSchemas.ts). Reads approvals.json (written by serve.py)
+to apply human decisions.
 
 IMPORTANT: this version only DECIDES. Actions are always recorded as mode "DryRun".
 Nothing here kills a process, edits the firewall or touches a file. Real executors
 come later and must call decide() first.
 
 Self-test (no Windows needed):  python pipeline.py --selftest
+
+Console demo from replayed samples (Mac or Windows):
+  python pipeline.py --evtx ../EVTX-ATTACK-SAMPLES-master --rebase-time --follow
+  python serve.py --data data --host 127.0.0.1
+  cd ../sentinel-fleet-console && npm run dev:file      # http://localhost:8080
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import ipaddress
 import json
 import ntpath
 import os
@@ -74,6 +82,7 @@ VERDICT_RANK = {"Benign": 0, "NeedsMoreEvidence": 1, "Malicious": 2}
 # "Responded" means a response was decided/approved; every action is still DryRun.
 DET_STATUS = {"PendingApproval": "Triaged", "BlockedByGuardrail": "Triaged", "RolledBack": "Triaged",
               "AutoExecuted": "Responded", "Approved": "Responded", "Rejected": "Dismissed"}
+ACTION_STATUSES = ["PendingApproval", "AutoExecuted", "Approved", "Rejected", "BlockedByGuardrail", "RolledBack"]
 
 
 def verdict_for(conf: float) -> str:
@@ -154,16 +163,32 @@ def read_evtx_file(path: Path):
         yield from EVENT_RE.findall(read_text_any(path))
 
 
-def fetch_live(log: str, since_seconds: int):
-    ps = ("Get-WinEvent -FilterHashtable @{LogName='%s'; StartTime=(Get-Date).AddSeconds(-%d)} "
-          "-ErrorAction SilentlyContinue | ForEach-Object { $_.ToXml() }") % (log, since_seconds)
+RECORD_RE = re.compile(r"<EventRecordID>(\d+)</EventRecordID>")
+
+
+def fetch_live(log: str, since_seconds: int = 0, after_record: int | None = None):
+    """Events from one live log -> (xml strings, highest EventRecordID seen).
+
+    wevtutil is used instead of Get-WinEvent: it reads a burst of tens of thousands of Sysmon
+    events in seconds, where Get-WinEvent + ToXml() timed out on the VM. After the first poll we
+    resume from the last record ID, so a slow cycle can never leave a gap the way a time window can.
+    """
+    if after_record is None:
+        q = f"*[System[TimeCreated[timediff(@SystemTime) <= {since_seconds * 1000}]]]"
+    else:
+        q = f"*[System[EventRecordID > {after_record}]]"
     try:
-        out = subprocess.run(["powershell", "-NoProfile", "-Command", ps],
-                             capture_output=True, text=True, timeout=90).stdout
+        r = subprocess.run(["wevtutil", "qe", log, f"/q:{q}", "/f:xml"], capture_output=True, timeout=90)
     except (OSError, subprocess.TimeoutExpired) as e:
         print(f"[live] could not read {log}: {e}", file=sys.stderr)
-        return []
-    return EVENT_RE.findall(out)
+        return [], after_record
+    if r.returncode != 0:
+        print(f"[live] could not read {log}: {r.stderr.decode('mbcs', 'replace').strip()}", file=sys.stderr)
+        return [], after_record
+    # wevtutil writes in the ANSI code page, not UTF-8 (a "(R)" in a Sysmon event broke strict UTF-8)
+    xmls = EVENT_RE.findall(r.stdout.decode("mbcs", errors="replace"))
+    recs = [int(m.group(1)) for x in xmls if (m := RECORD_RE.search(x))]
+    return xmls, max(recs, default=after_record)  # nothing yet: keep using the time window
 
 
 class Store:
@@ -234,7 +259,8 @@ SUSP_PATH = re.compile(r"\\(?:users\\public|temp|appdata|programdata|windows\\te
 OFFICE = {"winword.exe", "excel.exe", "powerpnt.exe", "outlook.exe"}
 SHELLS = {"powershell.exe", "pwsh.exe", "cmd.exe", "wscript.exe", "cscript.exe", "mshta.exe",
           "rundll32.exe", "regsvr32.exe"}
-LSASS_BAD_ACCESS = {"0x1010", "0x1410", "0x1fffff", "0x143a", "0x1438", "0x1f3fff"}
+# Compared as integers: Sysmon writes GrantedAccess zero-padded ("0x00001010", "0x001fffff").
+LSASS_BAD_ACCESS = {0x1010, 0x1410, 0x1fffff, 0x143a, 0x1438, 0x1f3fff, 0x1f1fff}
 LSASS_OK_SOURCES = {"msmpeng.exe", "csrss.exe", "wininit.exe", "wmiprvse.exe", "svchost.exe",
                     "lsm.exe", "services.exe", "winlogon.exe"}
 BROWSERS = {"chrome.exe", "msedge.exe", "firefox.exe", "iexplore.exe", "brave.exe"}
@@ -283,7 +309,7 @@ def rule_lsass(store, cfg):
     for ev in store.events:
         d = ev["data"]
         if ev["sysmon"] and ev["eventId"] == 10 and base(d.get("TargetImage")) == "lsass.exe" \
-                and d.get("GrantedAccess", "").lower() in LSASS_BAD_ACCESS \
+                and to_int(d.get("GrantedAccess")) in LSASS_BAD_ACCESS \
                 and base(d.get("SourceImage")) not in LSASS_OK_SOURCES:
             pid = to_int(d.get("SourceProcessId"))
             action = {"type": "KillProcess", "target": f"{base(d.get('SourceImage'))} (PID {pid})"} if pid else None
@@ -484,6 +510,7 @@ def build(store: Store, cfg, decisions: dict):
             st, blocked, steps = decide(f.action, verdict, verified, risk, cfg)
             ts = iso(f.anchor["time"])
             audit = [{"at": ts, "actor": a, "event": m} for a, m in steps]
+            executed_at, decided_by = (ts, "auto") if st == "AutoExecuted" else (None, None)
             d = decisions.get(act_id)
             if d:
                 dts = d.get("timestamp", ts)
@@ -491,49 +518,214 @@ def build(store: Store, cfg, decisions: dict):
                     if blocked:
                         audit.append({"at": dts, "actor": "guardrail", "event": f"approval refused: {blocked}"})
                     else:
-                        st = "Approved"; audit.append({"at": dts, "actor": "human", "event": "approved (executed in dry-run)"})
+                        st, executed_at, decided_by = "Approved", dts, "human"
+                        audit.append({"at": dts, "actor": "human", "event": "approved (executed in dry-run)"})
                 elif d["decision"] == "reject" and st == "PendingApproval":
-                    st = "Rejected"; audit.append({"at": dts, "actor": "human", "event": "rejected"})
+                    st, decided_by = "Rejected", "human"
+                    audit.append({"at": dts, "actor": "human", "event": "rejected"})
                 elif d["decision"] == "rollback" and st in ("AutoExecuted", "Approved") and ROLLBACK_AVAILABLE[f.action["type"]]:
                     st = "RolledBack"; audit.append({"at": dts, "actor": "human", "event": "rolled back"})
             status = DET_STATUS.get(st, "Triaged")
             action_rec = {
-                "id": act_id, "detectionId": det_id, "endpointId": f.anchor["host"], "type": f.action["type"],
-                "target": f.action["target"], "riskLevel": risk, "mode": "DryRun", "status": st,
-                "blockedReason": blocked, "rollbackAvailable": ROLLBACK_AVAILABLE[f.action["type"]],
-                "createdAt": ts, "source": f.anchor["source"], "auditLog": audit,
+                "id": act_id, "detectionId": det_id, "endpointId": f.anchor["host"], "hostname": f.anchor["host"],
+                "source": f.anchor["source"], "type": f.action["type"], "target": f.action["target"],
+                "riskLevel": risk, "mode": "DryRun", "status": st,
+                "rollbackAvailable": ROLLBACK_AVAILABLE[f.action["type"]], "evidenceVerified": verified,
+                "createdAt": ts, "auditLog": audit,
             }
+            # The console contract wants optional fields omitted, never null.
+            for k, v in (("executedAt", executed_at), ("decidedBy", decided_by), ("blockedReason", blocked)):
+                if v:
+                    action_rec[k] = v
             actions.append(action_rec)
-        detections.append({
-            "id": det_id, "endpointId": f.anchor["host"], "timestamp": iso(f.anchor["time"]),
-            "technique": {"id": f.tech, "name": f.tech_name}, "tactic": f.tactic,
-            "rule": f.rule, "ruleName": f.rule_name, "severity": f.severity,
+        det = {
+            "id": det_id, "endpointId": f.anchor["host"], "hostname": f.anchor["host"], "source": f.anchor["source"],
+            "timestamp": iso(f.anchor["time"]),
+            "technique": {"id": f.tech, "name": f.tech_name, "tactic": f.tactic},
+            "rule": f.rule, "severity": f.severity,
             "confidence": f.confidence, "verdict": verdict,
             "evidenceEventIds": f.evidence, "evidenceVerified": verified,
-            "reasoningSummary": reasoning,
-            "proposedAction": {"type": f.action["type"], "target": f.action["target"]} if (f.action and verdict == "Malicious") else None,
-            "status": status, "source": f.anchor["source"],
-        })
-    # endpoints
-    eps = {}
+            "reasoningSummary": f"{f.rule_name}: {reasoning}",
+            "proposedAction": ({"type": f.action["type"], "target": f.action["target"], "riskLevel": action_rec["riskLevel"]}
+                               if action_rec else None),
+            "status": status,
+        }
+        if action_rec:
+            det["actionId"] = act_id
+        detections.append(det)
+    # endpoints: a host with no Sysmon telemetry is Degraded, because most rules cannot see it
+    eps, has_sysmon = {}, set()
     for e in store.events:
         ep = eps.setdefault(e["host"], {"id": e["host"], "hostname": e["host"], "user": "", "os": "Windows", "department": "", "ip": "",
                                         "protectionState": "Protected", "lastSeen": e["time"], "source": "simulated"})
         ep["lastSeen"] = max(ep["lastSeen"], e["time"])
         if e["source"] == "live": ep["source"] = "live"
-        u = e["data"].get("User") or e["data"].get("SubjectUserName") or ""
-        if u and not u.endswith("$") and u not in ("-",) and "SYSTEM" not in u.upper(): ep["user"] = u
-    endpoints = [{**ep, "lastSeen": iso(ep["lastSeen"])} for ep in eps.values()]
+        if e["sysmon"]: has_sysmon.add(e["host"])
+        u = host_user(e)
+        if u: ep["user"] = u
+    endpoints = [{**ep, "lastSeen": iso(ep["lastSeen"]),
+                  "protectionState": "Protected" if h in has_sysmon else "Degraded"} for h, ep in eps.items()]
     now = datetime.now(timezone.utc)
     recent = sum(1 for e in store.events if e["source"] == "live" and (now - e["time"]).total_seconds() <= 60)
     stats = {
-        "generatedAt": iso(now), "eventsProcessed": len(store.events),
-        "eventsPerSecond": round(recent / 60, 2), "endpoints": len(endpoints),
-        "detections": len(detections), "actions": len(actions),
-        "actionsByStatus": {s: sum(1 for a in actions if a["status"] == s) for s in
-                            sorted({a["status"] for a in actions})},
+        "eventsProcessed": len(store.events),
+        "eventsPerSecond": round(recent / 60, 2),
+        "detections": sum(1 for d in detections if 0 <= (now - parse_time(d["timestamp"])).total_seconds() < 86400),
+        "actions": len(actions),
+        "actionsByStatus": {s: sum(1 for a in actions if a["status"] == s) for s in ACTION_STATUSES},
     }
     return detections, actions, endpoints, stats
+
+
+def host_user(e) -> str:
+    u = e["data"].get("User") or e["data"].get("SubjectUserName") or ""
+    if not u or u.endswith("$") or u == "-" or "SYSTEM" in u.upper() or u.upper().startswith("NT AUTHORITY"):
+        return ""
+    return u
+
+
+# ----------------------------------------------------------------- baselining
+INTERACTIVE_LOGONS = {"2", "7", "10", "11"}
+DEV_SCORE = {"LogonTime": 0.7, "NewProcess": 0.55, "NewDestination": 0.6}
+
+
+def destinations(ev):
+    """-> (value, type) for a network destination this event shows, or None."""
+    d = ev["data"]
+    if ev["sysmon"] and ev["eventId"] == 22:
+        q = d.get("QueryName", "").lower().rstrip(".")
+        return (q, "domain") if q else None
+    if ev["sysmon"] and ev["eventId"] == 3:
+        ip = d.get("DestinationIp", "")
+        try:
+            addr = ipaddress.ip_address(ip)
+        except ValueError:
+            return None
+        if not (addr.is_loopback or addr.is_unspecified or addr.is_link_local or addr.is_multicast):
+            return str(addr), "ip"
+    return None
+
+
+def build_baselines(store: Store, cfg):
+    """Learn each host's logon hours, processes and destinations from the earliest events,
+    then flag later events that fall outside them. Deviations are review-only."""
+    by_host = {}
+    for e in store.events:
+        by_host.setdefault(e["host"], []).append(e)
+    out = []
+    for host, evs in sorted(by_host.items()):
+        evs.sort(key=lambda e: e["time"])
+        cut = max(1, int(len(evs) * cfg.learn_fraction))
+        learn, watch = evs[:cut], evs[cut:]
+        active = len(learn) >= cfg.learn_min_events
+        hours, procs, dests = [0] * 24, {}, {}
+        for e in learn:
+            if e["eventId"] == 4624 and e["channel"] == "Security" and e["data"].get("LogonType") in INTERACTIVE_LOGONS:
+                hours[e["time"].hour] += 1
+            p = proc(e)
+            if p and base(p["image"]):
+                rec = procs.setdefault(base(p["image"]), {"name": base(p["image"]), "count": 0, "firstSeen": iso(e["time"])})
+                rec["count"] += 1
+            dst = destinations(e)
+            if dst:
+                dests.setdefault(dst, {"value": dst[0], "type": dst[1], "count": 0})["count"] += 1
+        deviations = []
+        if active:
+            seen = set()
+
+            def flag(kind, subject, e, reason, bonus=0.0):
+                if (kind, subject) in seen:
+                    return
+                seen.add((kind, subject))
+                deviations.append({
+                    "id": "DEV-" + hashlib.sha1(f"{host}|{kind}|{subject}".encode()).hexdigest()[:8].upper(),
+                    "timestamp": iso(e["time"]), "kind": kind, "subject": subject,
+                    "score": round(min(DEV_SCORE[kind] + bonus, 0.95), 2), "reason": reason,
+                    "evidenceEventIds": [e["id"]], "evidenceVerified": verify_evidence([e["id"]], store),
+                })
+            for e in watch:
+                if e["eventId"] == 4624 and e["channel"] == "Security" and e["data"].get("LogonType") in INTERACTIVE_LOGONS \
+                        and any(hours) and hours[e["time"].hour] == 0:
+                    flag("LogonTime", f"{e['data'].get('TargetUserName', '?')} at {e['time'].hour:02d}:00 UTC", e,
+                         f"no interactive logons were seen at {e['time'].hour:02d}:00 UTC while learning")
+                p = proc(e)
+                if p and base(p["image"]) and base(p["image"]) not in procs:
+                    flag("NewProcess", base(p["image"]), e, f"{base(p['image'])} never ran during learning; "
+                         f"parent {base(p['parent']) or 'unknown'}", 0.2 if SUSP_PATH.search(p["image"]) else 0.0)
+                dst = destinations(e)
+                if dst and dst not in dests:
+                    flag("NewDestination", dst[0], e, f"{base(e['data'].get('Image')) or 'a process'} contacted a "
+                         f"{dst[1]} never seen during learning", 0.3 if dst[0] in cfg.iocs else 0.0)
+        top = lambda d: sorted(d.values(), key=lambda r: -r["count"])[:15]
+        out.append({
+            "source": "live" if any(e["source"] == "live" for e in evs) else "simulated",
+            "endpointId": host,
+            "user": next((u for u in (host_user(e) for e in reversed(evs)) if u), "unknown"),
+            "status": "Active" if active else "Learning",
+            "learningWindow": {"start": iso(learn[0]["time"]), "end": iso(learn[-1]["time"]), "eventCount": len(learn)},
+            "logonHours": hours,
+            "usualProcesses": top(procs),
+            "usualDestinations": top(dests),
+            "deviations": sorted(deviations, key=lambda d: d["timestamp"], reverse=True)[:cfg.max_deviations],
+        })
+    return out
+
+
+# ----------------------------------------------------------------- logging tuning (gap analysis)
+# Each logging setting: how we know it is on, what to change, what it makes visible, and the risk of changing it.
+TUNING_CHECKS = [
+    ("networkConnections", "Sysmon", lambda e: e["sysmon"] and e["eventId"] == 3,
+     "No Sysmon network connection events (Event ID 3)", ["T1071.001", "T1021.001", "T1105"], "Medium",
+     "Enable Sysmon NetworkConnect so C2 callbacks, lateral movement and tool downloads can be tied to a process "
+     "and blocked by destination. Medium risk: raises event volume, so exclude known-good update traffic."),
+    ("dnsQueries", "Sysmon", lambda e: e["sysmon"] and e["eventId"] == 22,
+     "No Sysmon DNS query events (Event ID 22)", ["T1071.004", "T1568", "T1566.002"], "Low",
+     "Enable Sysmon DnsQuery. The hostile-domain rule and browser defence depend on it, and it adds little load."),
+    ("registryChanges", "Sysmon", lambda e: e["sysmon"] and e["eventId"] in (12, 13, 14),
+     "No Sysmon registry events (Event IDs 12-14)", ["T1547.001", "T1112", "T1546.012"], "Low",
+     "Enable Sysmon RegistryEvent for autorun, IFEO and policy keys so run-key persistence and security "
+     "setting tampering become visible. Scoped to those keys to keep volume low."),
+    ("powerShellScriptBlock", "AuditPolicy", lambda e: e["eventId"] == 4104,
+     "No PowerShell script block events (Event ID 4104)", ["T1059.001", "T1027"], "Low",
+     "Turn on PowerShell Script Block Logging so decoded script content backs up command-line detections "
+     "and obfuscated or encoded commands can be read."),
+]
+
+
+def build_tuning(store: Store, cfg):
+    """Infer each host's current logging from the telemetry it actually produced and propose the
+    changes that close visibility gaps. Replayed logs cannot be reconfigured, so every change is
+    Proposed with no validation result; nothing here edits Sysmon or audit policy."""
+    by_host = {}
+    for e in store.events:
+        by_host.setdefault(e["host"], []).append(e)
+    now = iso(datetime.now(timezone.utc))
+    out = []
+    for host, evs in sorted(by_host.items()):
+        before = {k: any(test(e) for e in evs) for k, _, test, *_ in TUNING_CHECKS}
+        before.update(managementChannel=True, agentService=True)  # never reduced by tuning
+        procs = [e for e in evs if proc(e)]
+        for key, system, _test, gap, techniques, risk, why in TUNING_CHECKS:
+            if before[key]:
+                continue
+            sample = (procs or evs)[-3:]
+            observation = (f"{len(evs)} events from {host}, {len(procs)} of them process creations, "
+                           f"but none for this setting. Recent activity that ran unobserved: "
+                           + ", ".join(sorted({base(proc(e)['image']) for e in sample if proc(e)}) or {"(no process events)"}))
+            out.append({
+                "id": "TUN-" + hashlib.sha1(f"{host}|{key}".encode()).hexdigest()[:8].upper(),
+                "timestamp": now, "hostId": host,
+                "source": "live" if any(e["source"] == "live" for e in evs) else "simulated",
+                "visibilityGap": gap,
+                "evidence": {"observation": observation, "eventIds": [e["id"] for e in sample]},
+                "proposedChange": {"system": system, "before": dict(before), "after": {**before, key: True}},
+                "justification": why, "riskLevel": risk, "status": "Proposed", "validationResult": None,
+                "rollbackSnapshotId": "not taken (proposal only)", "techniquesNowVisible": techniques,
+            })
+    return out
+
+
+EMPTY_RUNS = {"scenarios": [], "runs": [], "comparisons": [], "tuningLink": {"beforeRunId": "", "afterRunId": "", "changeIds": []}}
 
 
 def write_json(path: Path, obj):
@@ -556,7 +748,15 @@ def load_decisions(out: Path) -> dict:
 def run_cycle(store, cfg, out: Path):
     det, act, eps, stats = build(store, cfg, load_decisions(out))
     out.mkdir(parents=True, exist_ok=True)
-    for name, obj in (("detections", det), ("actions", act), ("endpoints", eps), ("stats", stats)):
+    files = [("detections", det), ("actions", act), ("endpoints", eps), ("stats", stats),
+             ("baselines", build_baselines(store, cfg)), ("tuning_changes", build_tuning(store, cfg))]
+    # runs.json is the experiment record, written by hand or a scoring script, so never overwrite it
+    # unless --runs supplies a new one; the console needs the file to exist, so start it empty.
+    if cfg.runs:
+        files.append(("runs", json.loads(read_text_any(Path(cfg.runs)))))
+    elif not (out / "runs.json").exists():
+        files.append(("runs", EMPTY_RUNS))
+    for name, obj in files:
         write_json(out / f"{name}.json", obj)
     return stats
 
@@ -569,6 +769,10 @@ class Cfg:
     mgmt: set = field(default_factory=set)
     llm: bool = False
     llm_cache: dict = field(default_factory=dict)
+    learn_fraction: float = 0.7    # earliest share of each host's events used to learn its baseline
+    learn_min_events: int = 50     # below this the baseline stays Learning and flags nothing
+    max_deviations: int = 25
+    runs: str | None = None
 
 
 def load_files(paths, store, rebase):
@@ -576,25 +780,27 @@ def load_files(paths, store, rebase):
     for p in paths:
         p = Path(p)
         files += sorted(x for x in p.rglob("*") if x.suffix.lower() in (".evtx", ".xml")) if p.is_dir() else [p]
-    batch = []
+    added, now = 0, datetime.now(timezone.utc)
     for f in files:
-        for xml in read_evtx_file(f):
-            ev = parse_event_xml(xml, "simulated", salt=f.name)
-            if ev: batch.append(ev)
-    if rebase and batch:  # replayed logs are old; shift so the newest event is "now"
-        delta = datetime.now(timezone.utc) - max(e["time"] for e in batch)
-        for e in batch: e["time"] += delta
-    return sum(store.add(e) for e in batch), len(files)
+        batch = [ev for ev in (parse_event_xml(xml, "simulated", salt=f.name) for xml in read_evtx_file(f)) if ev]
+        if rebase and batch:  # replayed samples are years old; shift each file so its newest event is "now"
+            delta = now - max(e["time"] for e in batch)
+            for e in batch: e["time"] += delta
+        added += sum(store.add(e) for e in batch)
+    return added, len(files)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--evtx", nargs="*", default=[], help=".evtx/.xml files or folders (simulated hosts)")
     ap.add_argument("--live", action="store_true", help="poll this machine's Windows logs (run as Administrator)")
+    ap.add_argument("--follow", action="store_true",
+                    help="keep cycling on replayed data so console approvals/rollbacks are applied")
     ap.add_argument("--lookback", type=int, default=3600, help="seconds of history to read on first live poll")
     ap.add_argument("--interval", type=int, default=5, help="seconds between cycles")
     ap.add_argument("--out", default="data")
-    ap.add_argument("--rebase-time", action="store_true", help="shift replayed events so the newest is now")
+    ap.add_argument("--rebase-time", action="store_true", help="shift each replayed file so its newest event is now")
+    ap.add_argument("--runs", help="experiment record (ExperimentSnapshot JSON) to publish as runs.json")
     ap.add_argument("--iocs", help="text file, one hostile domain per line")
     ap.add_argument("--mgmt", nargs="*", default=[], help="management hosts/IPs that must never be blocked")
     ap.add_argument("--auto-execute-up-to", default="Low", choices=["None", "Low", "Medium", "High"])
@@ -603,7 +809,9 @@ def main():
     a = ap.parse_args()
     if a.selftest:
         return selftest()
-    cfg = Cfg(auto_up_to=a.auto_execute_up_to, llm=a.llm, mgmt={m.lower() for m in a.mgmt})
+    cfg = Cfg(auto_up_to=a.auto_execute_up_to, llm=a.llm, mgmt={m.lower() for m in a.mgmt}, runs=a.runs)
+    if a.runs and not Path(a.runs).is_file():
+        ap.error(f"runs file not found: {a.runs}")
     if a.iocs:
         if not Path(a.iocs).is_file():
             ap.error(f"IOC file not found: {a.iocs} (create it with one domain per line)")
@@ -614,18 +822,18 @@ def main():
     if a.evtx:
         n, nf = load_files(a.evtx, store, a.rebase_time)
         print(f"[replay] {n} events from {nf} file(s)")
-    first = True
+    bookmarks = {}  # log -> last EventRecordID read
     while True:
         if a.live:
             added = 0
             for log in LIVE_LOGS:
-                for xml in fetch_live(log, a.lookback if first else a.interval * 3):
+                xmls, bookmarks[log] = fetch_live(log, a.lookback, bookmarks.get(log))
+                for xml in xmls:
                     added += store.add(parse_event_xml(xml, "live"))
-            first = False
-            print(f"[live] +{added} events")
+            print(f"[live] +{added} events", flush=True)
         stats = run_cycle(store, cfg, out)
-        print(f"[cycle] events={stats['eventsProcessed']} detections={stats['detections']} actions={stats['actions']}")
-        if not a.live:
+        print(f"[cycle] events={stats['eventsProcessed']} detections={stats['detections']} actions={stats['actions']}", flush=True)
+        if not (a.live or a.follow):
             break
         time.sleep(a.interval)
 
@@ -653,7 +861,7 @@ def selftest():
         _xml(11, {"Image": r"C:\Windows\System32\cmd.exe", "TargetFilename": r"C:\Users\demo\Desktop\eicar.com"}, 3),
         _xml(22, {"Image": r"C:\Program Files\Microsoft\Edge\msedge.exe", "QueryName": "login-0ffice.net"}, 4),
         _xml(10, {"SourceImage": r"C:\Users\Public\x.exe", "SourceProcessId": 555, "TargetImage": r"C:\Windows\system32\lsass.exe",
-                  "GrantedAccess": "0x1010"}, 5),
+                  "GrantedAccess": "0x00001010"}, 5),
         _xml(1, {"Image": r"C:\Windows\System32\notepad.exe", "ProcessId": 9, "CommandLine": "notepad.exe", "ParentImage": r"C:\Windows\explorer.exe"}, 6),
     ]
     for s in samples: store.add(parse_event_xml(s, "live"))
@@ -669,7 +877,13 @@ def selftest():
     eic = acts[by_rule["GR-EICAR-001"]["id"]]
     assert eic["type"] == "QuarantineFile" and eic["status"] == "AutoExecuted"
     assert acts[by_rule["GR-DNS-IOC-001"]["id"]]["status"] == "PendingApproval"
-    assert acts[by_rule["GR-LSASS-001"]["id"]]["target"] == "x.exe (PID 555)"
+    assert acts[by_rule["GR-LSASS-001"]["id"]]["target"] == "x.exe (PID 555)", "zero-padded GrantedAccess must match"
+    assert all(d.get("actionId") == a["id"] for a in act for d in det if d["id"] == a["detectionId"])
+    assert all(None not in a.values() for a in act), "optional action fields are omitted, not null"
+    assert set(stats["actionsByStatus"]) == set(ACTION_STATUSES)
+    assert eic.get("decidedBy") == "auto" and eic.get("executedAt")
+    gaps = {c["visibilityGap"] for c in build_tuning(store, cfg)}
+    assert any("4104" in g for g in gaps) and any("Event ID 3" in g for g in gaps), gaps
     assert len(ps) == 2 and "notepad" not in json.dumps(det).lower()
     for t, target in [("KillProcess", "lsass.exe (PID 700)"), ("DisableService", "GrimReaperAgent"),
                       ("DisableService", "Sysmon64"), ("BlockDomain", "mgmt.grimreaper.io"),
