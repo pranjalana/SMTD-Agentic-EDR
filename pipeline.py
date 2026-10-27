@@ -16,9 +16,10 @@ baselines.json, tuning_changes.json and runs.json, in the shape the console vali
 (sentinel-fleet-console/src/data/fileSchemas.ts). Reads approvals.json (written by serve.py)
 to apply human decisions.
 
-IMPORTANT: this version only DECIDES. Actions are always recorded as mode "DryRun".
-Nothing here kills a process, edits the firewall or touches a file. Real executors
-come later and must call decide() first.
+DryRun by default: actions are decided and recorded, nothing is changed. With --execute (Administrator),
+actions that decide() auto-executes or a human approves are carried out for real by executors.py, but only
+for live records of this machine; replayed/simulated hosts are always DryRun. With --apply-tuning, Low-risk
+Sysmon logging proposals for this machine are applied, validated and recorded by tuning.py.
 
 Self-test (no Windows needed):  python pipeline.py --selftest
 
@@ -43,6 +44,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+import executors
+import tuning
 
 NS = "{http://schemas.microsoft.com/win/2004/08/events/event}"
 EVENT_RE = re.compile(r"<Event[ >].*?</Event>", re.S)
@@ -71,7 +75,7 @@ ROLLBACK_AVAILABLE = {
 }
 RISK_RANK = {"None": 0, "Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 PROTECTED_PROCESSES = {"lsass.exe", "csrss.exe", "wininit.exe", "services.exe", "smss.exe",
-                       "winlogon.exe", "system", "registry"}
+                       "winlogon.exe", "system", "registry"} | executors.OWN_TOOLING  # + our own tooling
 # Never disable our own agent, our own logging, or core Windows services.
 PROTECTED_SERVICES = {"grimreaperagent", "sysmon", "sysmon64", "sysmon64a", "eventlog", "rpcss",
                       "dcomlaunch", "samss", "lsm", "mpssvc", "windefend"}
@@ -79,7 +83,7 @@ PROTECTED_DESTINATIONS = {"mgmt.grimreaper.io", "localhost", "127.0.0.1", "::1"}
 
 VERDICT_RANK = {"Benign": 0, "NeedsMoreEvidence": 1, "Malicious": 2}
 # Console detection statuses: New / Triaged / Responded / Dismissed (derived from the action status).
-# "Responded" means a response was decided/approved; every action is still DryRun.
+# "Responded" means a response was decided/approved (carried out for real only with --execute).
 DET_STATUS = {"PendingApproval": "Triaged", "BlockedByGuardrail": "Triaged", "RolledBack": "Triaged",
               "AutoExecuted": "Responded", "Approved": "Responded", "Rejected": "Dismissed"}
 ACTION_STATUSES = ["PendingApproval", "AutoExecuted", "Approved", "Rejected", "BlockedByGuardrail", "RolledBack"]
@@ -403,8 +407,43 @@ def rule_bruteforce(store, cfg):
                 break
 
 
+def hostile_ips(store, cfg) -> set:
+    """--ioc-ips plus every address a hostile domain resolved to (Sysmon 22 QueryResults)."""
+    ips = set(cfg.ioc_ips)
+    for ev in store.events:
+        d = ev["data"]
+        if ev["sysmon"] and ev["eventId"] == 22:
+            q = d.get("QueryName", "").lower().rstrip(".")
+            if any(q == i or q.endswith("." + i) for i in cfg.iocs):
+                ips |= set(re.findall(r"(?:::ffff:)?(\d{1,3}(?:\.\d{1,3}){3})", d.get("QueryResults", "")))
+    return ips
+
+
+def rule_ioc_destination(store, cfg):
+    bad = hostile_ips(store, cfg)
+    for ev in store.events:
+        d = ev["data"]
+        if bad and ev["sysmon"] and ev["eventId"] == 3 and d.get("DestinationIp", "").removeprefix("::ffff:") in bad:
+            ip, img = d["DestinationIp"].removeprefix("::ffff:"), base(d.get("Image"))
+            who = f"browser {img}" if img in BROWSERS else img
+            yield Finding("GR-NET-IOC-001", "Connection to a known-hostile address", "T1071.001",
+                          "Application Layer Protocol: Web Protocols", "Command and Control", "High", 0.90, ev,
+                          [ev["id"]], f"{who} connected to {ip}:{d.get('DestinationPort', '')}, which is on the hostile-address list",
+                          {"type": "BlockDestination", "target": ip})
+
+
+def rule_browser_child(store, cfg):
+    for ev in store.events:
+        p = proc(ev)
+        if p and base(p["parent"]) in BROWSERS and base(p["image"]) in SHELLS:
+            action = {"type": "KillProcess", "target": f"{base(p['image'])} (PID {p['pid']})"} if p["pid"] else None
+            yield Finding("GR-BROWSER-CHILD-001", "Web browser spawned a shell or script host", "T1189",
+                          "Drive-by Compromise", "Initial Access", "High", 0.8, ev, [ev["id"]],
+                          f"{base(p['parent'])} spawned {base(p['image'])}: {short(p['cmd'])}", action)
+
+
 RULES = [rule_powershell, rule_office_child, rule_lsass, rule_service, rule_runkey, rule_schtask,
-         rule_eicar, rule_ioc_dns, rule_bruteforce]
+         rule_eicar, rule_ioc_dns, rule_bruteforce, rule_browser_child, rule_ioc_destination]
 
 
 # ----------------------------------------------------------------- triage + validation
@@ -497,11 +536,14 @@ def iso(dt: datetime) -> str:
 
 def build(store: Store, cfg, decisions: dict):
     findings = []
+    by_guid = {e["data"].get("ProcessGuid"): e for e in store.events if e["sysmon"] and e["eventId"] == 1}
     for rule in RULES:
         findings.extend(rule(store, cfg))
     detections, actions = [], []
     for f in sorted(findings, key=lambda x: x.anchor["time"], reverse=True):
-        key = hashlib.sha1((f.rule + "|" + "|".join(sorted(f.evidence))).encode()).hexdigest()[:8].upper()
+        # Keyed on rule + anchor event, not the whole evidence list: evidence can grow later (a script block
+        # log arriving after the process event) and must not turn an executed action into a new pending one.
+        key = hashlib.sha1(f"{f.rule}|{f.anchor['id']}".encode()).hexdigest()[:8].upper()
         verdict, reasoning, verified = triage(f, store, cfg, key)
         det_id, act_id = f"DET-{key}", f"ACT-{key}"
         status, action_rec = "New", None
@@ -511,8 +553,8 @@ def build(store: Store, cfg, decisions: dict):
             ts = iso(f.anchor["time"])
             audit = [{"at": ts, "actor": a, "event": m} for a, m in steps]
             executed_at, decided_by = (ts, "auto") if st == "AutoExecuted" else (None, None)
-            d = decisions.get(act_id)
-            if d:
+            ds = decisions.get(act_id, [])
+            for d in [ds] if isinstance(ds, dict) else ds:  # every decision, in order (approve, then rollback)
                 dts = d.get("timestamp", ts)
                 if d["decision"] == "approve" and st == "PendingApproval":
                     if blocked:
@@ -531,7 +573,7 @@ def build(store: Store, cfg, decisions: dict):
                 "source": f.anchor["source"], "type": f.action["type"], "target": f.action["target"],
                 "riskLevel": risk, "mode": "DryRun", "status": st,
                 "rollbackAvailable": ROLLBACK_AVAILABLE[f.action["type"]], "evidenceVerified": verified,
-                "createdAt": ts, "auditLog": audit,
+                "createdAt": ts, "auditLog": audit, "_params": executor_params(f, by_guid),
             }
             # The console contract wants optional fields omitted, never null.
             for k, v in (("executedAt", executed_at), ("decidedBy", decided_by), ("blockedReason", blocked)):
@@ -575,6 +617,79 @@ def build(store: Store, cfg, decisions: dict):
         "actionsByStatus": {s: sum(1 for a in actions if a["status"] == s) for s in ACTION_STATUSES},
     }
     return detections, actions, endpoints, stats
+
+
+def executor_params(f: Finding, by_guid: dict) -> dict:
+    """What an executor needs beyond the target text. Kept out of the JSON the console reads."""
+    a = f.action
+    if a["type"] != "KillProcess":
+        return {"value": a["target"]}
+    m = re.match(r"(.+?) \(PID (\d+)\)$", a["target"])
+    if not m:
+        return {}
+    p = proc(f.anchor)  # only a process-creation anchor tells us when this PID started
+    started = f.anchor["time"] if p and p["pid"] == int(m.group(2)) else None
+    return {"image": m.group(1).lower(), "pid": int(m.group(2)), "started": started,
+            "lineage": lineage(f.anchor, by_guid) if p else []}
+
+
+def lineage(ev, by_guid: dict, depth=16) -> list:
+    """Parent image names as Sysmon logged them at creation, nearest first. Unlike the live process
+    table this survives parents exiting (an orphaned child still shows who started it)."""
+    names, d = [], ev["data"]
+    while d is not None and len(names) < depth:
+        if d.get("ParentImage"):
+            names.append(base(d["ParentImage"]))
+        parent = by_guid.get(d.get("ParentProcessGuid"))
+        d = parent["data"] if parent and parent is not ev else None
+    return names
+
+
+def apply_executions(actions, detections, cfg):
+    """--execute: hand gated actions to executors.py. decide() has already run; the executors re-check
+    their own guardrails, act only on this machine's live records, and run each action once. The record
+    of what ran (and how to undo it) lives in the state dir, so it survives a reset of --out."""
+    path = cfg.state_dir / "executions.json"
+    state = json.loads(read_text_any(path)) if path.exists() else {}
+    changed = False
+    guard = {"processes": PROTECTED_PROCESSES, "services": PROTECTED_SERVICES,
+             "destinations": PROTECTED_DESTINATIONS | cfg.mgmt, "repo": Path(__file__).resolve().parent,
+             "quarantine": cfg.state_dir / "Quarantine"}
+    for a in actions:
+        params = a.pop("_params", {})
+        if not (cfg.execute and a["source"] == "live" and a["endpointId"].upper() == cfg.host):
+            continue
+        a["mode"] = "Live"
+        rec = state.get(a["id"])
+        if rec is None and a["status"] in ("AutoExecuted", "Approved"):
+            rec = state[a["id"]] = executors.execute(a, params, guard)
+            changed = True
+            print(f"[execute] {a['id']} {a['type']} {a['target']}: {rec['log'][-1]['event']}", flush=True)
+        elif rec and rec["state"] == "executed" and a["status"] == "RolledBack" and "rollbackError" not in rec:
+            executors.rollback(rec)
+            changed = True
+            print(f"[rollback] {a['id']}: {rec['log'][-1]['event']}", flush=True)
+        if rec:
+            annotate_execution(a, rec)
+    if changed:
+        cfg.state_dir.mkdir(parents=True, exist_ok=True)
+        write_json(path, state)
+    status = {a["id"]: a["status"] for a in actions}
+    for d in detections:
+        if d.get("actionId") in status:
+            d["status"] = DET_STATUS.get(status[d["actionId"]], "Triaged")
+
+
+def annotate_execution(a: dict, rec: dict):
+    a["auditLog"] = [dict(e, event=e["event"].replace("executed in dry-run", "sent to executor")) for e in a["auditLog"]]
+    a["auditLog"] += rec["log"]
+    if rec["state"] == "refused":
+        a["status"], a["blockedReason"] = "BlockedByGuardrail", rec["reason"]
+        a.pop("executedAt", None)
+    else:
+        a["executedAt"] = rec["at"]
+        if a["status"] == "RolledBack" and rec["state"] != "rolledback":
+            a["status"] = "AutoExecuted" if a.get("decidedBy") == "auto" else "Approved"  # rollback did not happen
 
 
 def host_user(e) -> str:
@@ -692,10 +807,12 @@ TUNING_CHECKS = [
 ]
 
 
-def build_tuning(store: Store, cfg):
+def build_tuning(store: Store, cfg, managed: dict | None = None):
     """Infer each host's current logging from the telemetry it actually produced and propose the
-    changes that close visibility gaps. Replayed logs cannot be reconfigured, so every change is
-    Proposed with no validation result; nothing here edits Sysmon or audit policy."""
+    changes that close visibility gaps. Every change is Proposed with no validation result; nothing
+    here edits Sysmon or audit policy (tuning.py applies them with --apply-tuning).
+    `managed` is the Sysmon config tuning.py put on this machine. It overrides inference for this host,
+    because old events can still show logging that a later config switched off."""
     by_host = {}
     for e in store.events:
         by_host.setdefault(e["host"], []).append(e)
@@ -704,14 +821,20 @@ def build_tuning(store: Store, cfg):
     for host, evs in sorted(by_host.items()):
         before = {k: any(test(e) for e in evs) for k, _, test, *_ in TUNING_CHECKS}
         before.update(managementChannel=True, agentService=True)  # never reduced by tuning
+        is_managed = bool(managed) and host.upper() == cfg.host
+        if is_managed:
+            before.update({k: bool(managed.get(k)) for k in tuning.SYSMON_KEYS})
         procs = [e for e in evs if proc(e)]
         for key, system, _test, gap, techniques, risk, why in TUNING_CHECKS:
             if before[key]:
                 continue
             sample = (procs or evs)[-3:]
-            observation = (f"{len(evs)} events from {host}, {len(procs)} of them process creations, "
-                           f"but none for this setting. Recent activity that ran unobserved: "
-                           + ", ".join(sorted({base(proc(e)['image']) for e in sample if proc(e)}) or {"(no process events)"}))
+            unobserved = ", ".join(sorted({base(proc(e)['image']) for e in sample if proc(e)}) or {"(no process events)"})
+            observation = (f"The Sysmon config Grim Reaper manages on {host} has this logging switched off. "
+                           f"Recent activity it cannot see in this respect: {unobserved}"
+                           if is_managed and system == "Sysmon" else
+                           f"{len(evs)} events from {host}, {len(procs)} of them process creations, "
+                           f"but none for this setting. Recent activity that ran unobserved: {unobserved}")
             out.append({
                 "id": "TUN-" + hashlib.sha1(f"{host}|{key}".encode()).hexdigest()[:8].upper(),
                 "timestamp": now, "hostId": host,
@@ -735,21 +858,28 @@ def write_json(path: Path, obj):
 
 
 def load_decisions(out: Path) -> dict:
-    p, latest = out / "approvals.json", {}
+    """actionId -> every decision recorded for it, oldest first. Keeping only the latest would turn
+    approve-then-rollback into a lone rollback of a pending action, which is ignored."""
+    p, history = out / "approvals.json", {}
     if p.exists():
         try:
             for d in json.loads(p.read_text(encoding="utf-8")):
-                latest[d["actionId"]] = d
+                history.setdefault(d["actionId"], []).append(d)
         except (json.JSONDecodeError, KeyError, TypeError):
             pass
-    return latest
+    return history
 
 
 def run_cycle(store, cfg, out: Path):
     det, act, eps, stats = build(store, cfg, load_decisions(out))
+    apply_executions(act, det, cfg)
+    stats["actionsByStatus"] = {s: sum(1 for a in act if a["status"] == s) for s in ACTION_STATUSES}
+    tun = build_tuning(store, cfg, tuning.load_state(cfg.state_dir)["current"] if cfg.apply_tuning else None)
+    if cfg.apply_tuning:
+        tun = tuning.apply_proposals(tun, cfg)
     out.mkdir(parents=True, exist_ok=True)
     files = [("detections", det), ("actions", act), ("endpoints", eps), ("stats", stats),
-             ("baselines", build_baselines(store, cfg)), ("tuning_changes", build_tuning(store, cfg))]
+             ("baselines", build_baselines(store, cfg)), ("tuning_changes", tun)]
     # runs.json is the experiment record, written by hand or a scoring script, so never overwrite it
     # unless --runs supplies a new one; the console needs the file to exist, so start it empty.
     if cfg.runs:
@@ -766,6 +896,7 @@ def run_cycle(store, cfg, out: Path):
 class Cfg:
     auto_up_to: str = "Low"
     iocs: list = field(default_factory=lambda: ["login-0ffice.net", "cdn-update-sync.top"])  # lab placeholders
+    ioc_ips: set = field(default_factory=set)  # lab placeholders, from --ioc-ips
     mgmt: set = field(default_factory=set)
     llm: bool = False
     llm_cache: dict = field(default_factory=dict)
@@ -773,6 +904,10 @@ class Cfg:
     learn_min_events: int = 50     # below this the baseline stays Learning and flags nothing
     max_deviations: int = 25
     runs: str | None = None
+    execute: bool = False          # --execute: carry out gated actions for real (this machine, live only)
+    apply_tuning: bool = False     # --apply-tuning: apply Low-risk Sysmon proposals for this machine
+    host: str = os.environ.get("COMPUTERNAME", "").upper()
+    state_dir: Path = executors.STATE_DIR
 
 
 def load_files(paths, store, rebase):
@@ -802,14 +937,24 @@ def main():
     ap.add_argument("--rebase-time", action="store_true", help="shift each replayed file so its newest event is now")
     ap.add_argument("--runs", help="experiment record (ExperimentSnapshot JSON) to publish as runs.json")
     ap.add_argument("--iocs", help="text file, one hostile domain per line")
+    ap.add_argument("--ioc-ips", nargs="*", default=[], help="hostile IP addresses (lab indicators)")
     ap.add_argument("--mgmt", nargs="*", default=[], help="management hosts/IPs that must never be blocked")
     ap.add_argument("--auto-execute-up-to", default="Low", choices=["None", "Low", "Medium", "High"])
     ap.add_argument("--llm", action="store_true", help="use Claude for triage (needs ANTHROPIC_API_KEY)")
+    ap.add_argument("--execute", action="store_true",
+                    help="carry out gated actions for real on this machine (Administrator; live records only)")
+    ap.add_argument("--apply-tuning", action="store_true",
+                    help="apply Low-risk Sysmon logging proposals for this machine (Administrator; see tuning.py)")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     if a.selftest:
         return selftest()
-    cfg = Cfg(auto_up_to=a.auto_execute_up_to, llm=a.llm, mgmt={m.lower() for m in a.mgmt}, runs=a.runs)
+    cfg = Cfg(auto_up_to=a.auto_execute_up_to, llm=a.llm, mgmt={m.lower() for m in a.mgmt}, runs=a.runs,
+              execute=a.execute, apply_tuning=a.apply_tuning, ioc_ips=set(a.ioc_ips))
+    if (a.execute or a.apply_tuning) and not a.live:
+        ap.error("--execute and --apply-tuning only act on this machine, so they need --live")
+    if (a.execute or a.apply_tuning) and not executors.is_admin():
+        print("[warn] not running as Administrator: firewall, hosts-file, service and Sysmon changes will fail", flush=True)
     if a.runs and not Path(a.runs).is_file():
         ap.error(f"runs file not found: {a.runs}")
     if a.iocs:
@@ -899,7 +1044,99 @@ def selftest():
                                          eic["id"]: {"decision": "rollback", "timestamp": "2026-10-24T09:01:00Z"}})
     a2 = {a["id"]: a for a in act2}
     assert a2[kill["id"]]["status"] == "Approved" and a2[eic["id"]]["status"] == "RolledBack"
-    print(f"selftest OK: {len(det)} detections, {len(act)} actions, {len(eps)} endpoint(s)")
+    dns = acts[by_rule["GR-DNS-IOC-001"]["id"]]
+    _, act3, *_ = build(store, cfg, {dns["id"]: [{"decision": "approve", "timestamp": "2026-10-24T09:00:00Z"},
+                                                 {"decision": "rollback", "timestamp": "2026-10-24T09:05:00Z"}]})
+    assert {a["id"]: a for a in act3}[dns["id"]]["status"] == "RolledBack", "approve then rollback must roll back"
+    selftest_execution(store)
+    print(f"selftest OK: {len(det)} detections, {len(act)} actions, {len(eps)} endpoint(s); executors and tuning OK")
+
+
+def selftest_execution(store):
+    """Executor wiring with fake executors, plus real executor guardrails that refuse before acting.
+    Nothing on this machine is changed."""
+    import tempfile
+    tmp = Path(tempfile.mkdtemp(prefix="grim-selftest-"))
+    host = "WIN11-LAB-01"
+    # browser rule
+    store.add(parse_event_xml(_xml(1, {"Image": r"C:\Windows\System32\cmd.exe", "ProcessId": 4242, "CommandLine": "cmd /c whoami",
+                                       "ParentImage": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"}, 7), "live"))
+    store.add(parse_event_xml(_xml(3, {"Image": r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+                                       "DestinationIp": "203.0.113.66", "DestinationPort": "443"}, 8), "live"))
+    assert any(f.rule == "GR-NET-IOC-001" for f in rule_ioc_destination(store, Cfg(ioc_ips={"203.0.113.66"})))
+    assert not list(rule_ioc_destination(store, Cfg()))
+    # dry run: params never reach the JSON, mode stays DryRun
+    cfg = Cfg(host=host, state_dir=tmp)
+    det, act, *_ = build(store, cfg, {})
+    assert any(d["rule"] == "GR-BROWSER-CHILD-001" and d["verdict"] == "Malicious" for d in det)
+    apply_executions(act, det, cfg)
+    assert all("_params" not in a and a["mode"] == "DryRun" for a in act) and not (tmp / "executions.json").exists()
+    # --execute with fake executors: runs once, rolls back, refusals become BlockedByGuardrail
+    calls, real = [], dict(executors.EXECUTORS)
+    def fake_do(p, g, aid):
+        calls.append(("do", aid))
+        if p.get("image") == "cmd.exe":
+            raise executors.Refused("fake guardrail refusal")
+        return "done", {"x": 1}
+    executors.EXECUTORS.update({t: (fake_do, lambda u: calls.append(("undo",)) or "undone") for t in executors.EXECUTORS})
+    try:
+        cfg = Cfg(host=host, state_dir=tmp, execute=True)
+        det, act, *_ = build(store, cfg, {})
+        eic = next(a for a in act if a["type"] == "QuarantineFile")
+        ps_kill = next(a for a in act if a["type"] == "KillProcess" and "powershell" in a["target"])
+        web = next(a for a in act if "cmd.exe" in a["target"])
+        decisions = {ps_kill["id"]: {"decision": "approve"}, web["id"]: {"decision": "approve"}}
+        det, act, *_ = build(store, cfg, decisions); apply_executions(act, det, cfg)
+        a = {x["id"]: x for x in act}
+        assert a[eic["id"]]["mode"] == "Live" and a[eic["id"]]["auditLog"][-1]["event"] == "done"
+        assert a[ps_kill["id"]]["status"] == "Approved" and a[web["id"]]["status"] == "BlockedByGuardrail"
+        assert a[web["id"]]["blockedReason"] == "fake guardrail refusal"
+        n = len(calls)
+        det, act, *_ = build(store, cfg, {**decisions, eic["id"]: {"decision": "rollback"}}); apply_executions(act, det, cfg)
+        assert ("undo",) in calls and len([c for c in calls if c[0] == "do"]) == n, "each action runs once"
+        assert {x["id"]: x for x in act}[eic["id"]]["status"] == "RolledBack"
+    finally:
+        executors.EXECUTORS.clear(); executors.EXECUTORS.update(real)
+    # real executor guardrails (all refuse before touching anything)
+    g = {"processes": PROTECTED_PROCESSES, "services": PROTECTED_SERVICES, "destinations": PROTECTED_DESTINATIONS | {"172.16.123.1"},
+         "repo": Path(__file__).resolve().parent, "quarantine": tmp / "q"}
+    for fn, p in [(executors.block_domain, {"value": "update.microsoft.com"}), (executors.block_domain, {"value": "localhost"}),
+                  (executors.block_destination, {"value": "127.0.0.1"}), (executors.block_destination, {"value": "172.16.123.1"}),
+                  *[(executors.block_destination, {"value": ip}) for ip in sorted(executors.local_addresses())[:1]],
+                  (executors.quarantine_file, {"value": r"C:\Windows\System32\kernel32.dll"}),
+                  (executors.disable_service, {"value": "Sysmon"})] + \
+                 ([(executors.kill_process, {"pid": os.getpid(), "image": "python.exe"})] if os.name == "nt" else []):
+        try:
+            fn(p, g, "ACT-SELFTEST")
+            raise AssertionError(f"{fn.__name__} {p} was not refused")
+        except executors.Refused:
+            pass
+    # lineage survives the parent exiting: claude.exe -> powershell.exe (exited) -> powershell.exe (target)
+    tool = parse_event_xml(_xml(1, {"Image": r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "ProcessId": 500,
+                                    "ProcessGuid": "{G-500}", "ParentImage": r"C:\Users\Jae\AppData\Roaming\Claude\claude.exe",
+                                    "ParentProcessGuid": "{G-1}"}, 20), "live")
+    child = parse_event_xml(_xml(1, {"Image": r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe", "ProcessId": 501,
+                                     "ProcessGuid": "{G-501}", "ParentImage": r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
+                                     "ParentProcessGuid": "{G-500}"}, 21), "live")
+    assert lineage(child, {"{G-500}": tool, "{G-501}": child}) == ["powershell.exe", "claude.exe"]
+    # a managed config overrides old telemetry: DNS events exist in the store, but managed says DNS is off
+    gaps = {c["visibilityGap"] for c in build_tuning(store, Cfg(host=host), {"networkConnections": True, "dnsQueries": False, "registryChanges": True})
+            if c["hostId"] == host}
+    assert any("Event ID 22" in g for g in gaps) and not any("12-14" in g for g in gaps), gaps
+    # tuning: render never drops logging; applied records stay visible after the gap closes
+    weak, strong = tuning.render_sysmon(tuning.WEAK), tuning.render_sysmon(tuning.STRONG)
+    assert '<DnsQuery onmatch="include"/>' in weak and '<DnsQuery onmatch="exclude"/>' in strong
+    ET.fromstring(strong)
+    applied = {"id": "TUN-APPLIED", "status": "Applied"}
+    (tmp / "tuning_state.json").write_text(json.dumps({"current": tuning.STRONG, "changes": {"TUN-APPLIED": applied}}))
+    merged = tuning.apply_proposals([], Cfg(host=host, state_dir=tmp))
+    assert merged == [applied]
+    shutil_rmtree(tmp)
+
+
+def shutil_rmtree(p: Path):
+    import shutil
+    shutil.rmtree(p, ignore_errors=True)
 
 
 if __name__ == "__main__":

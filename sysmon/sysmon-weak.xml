@@ -1,0 +1,40 @@
+<!-- Grim Reaper managed Sysmon config. Rendered 2026-10-26T11:09:50Z. Optional logging on: networkConnections. -->
+<Sysmon schemaversion="4.91">
+  <HashAlgorithms>sha256</HashAlgorithms>
+  <EventFiltering>
+    <RuleGroup groupRelation="or"><ProcessCreate onmatch="exclude"/></RuleGroup>
+    <RuleGroup groupRelation="or"><ProcessTerminate onmatch="exclude"/></RuleGroup>
+    <RuleGroup groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">\Downloads\</TargetFilename>
+        <TargetFilename condition="contains">\Users\Public\</TargetFilename>
+        <TargetFilename condition="contains">\AppData\Local\Temp\</TargetFilename>
+        <TargetFilename condition="contains">\Windows\Temp\</TargetFilename>
+        <TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+    <RuleGroup groupRelation="or">
+      <ProcessAccess onmatch="include">
+        <TargetImage condition="end with">lsass.exe</TargetImage>
+      </ProcessAccess>
+    </RuleGroup>
+    <RuleGroup groupRelation="or"><NetworkConnect onmatch="exclude"/></RuleGroup>
+    <RuleGroup groupRelation="or"><DnsQuery onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><RegistryEvent onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileCreateTime onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><DriverLoad onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><ImageLoad onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><CreateRemoteThread onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><RawAccessRead onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileCreateStreamHash onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><PipeEvent onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><WmiEvent onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileDelete onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><ClipboardChange onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><ProcessTampering onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileDeleteDetected onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileBlockExecutable onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileBlockShredding onmatch="include"/></RuleGroup>
+    <RuleGroup groupRelation="or"><FileExecutableDetected onmatch="include"/></RuleGroup>
+  </EventFiltering>
+</Sysmon>
