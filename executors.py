@@ -24,7 +24,6 @@ import json
 import os
 import re
 import shutil
-import socket
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -267,11 +266,8 @@ def block_domain(p: dict, g: dict, action_id: str):
     except PermissionError:
         raise Failed("no write access to the hosts file; run the pipeline as Administrator")
     run(["ipconfig", "/flushdns"])
-    try:
-        got = sorted({a[4][0] for a in socket.getaddrinfo(d, None, socket.AF_INET)})
-    except OSError:
-        got = ["no answer"]
-    return f"hosts file sinkholes {d} to 0.0.0.0 (now resolves to {', '.join(got)})", {"tag": tag, "domain": d}
+    # No test lookup here: our own query for a hostile domain would itself be detected and proposed again.
+    return f"hosts file sinkholes {d} to 0.0.0.0 and the DNS cache was flushed", {"tag": tag, "domain": d}
 
 
 def unblock_domain(u: dict):

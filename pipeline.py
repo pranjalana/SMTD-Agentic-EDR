@@ -540,14 +540,25 @@ def build(store: Store, cfg, decisions: dict):
     for rule in RULES:
         findings.extend(rule(store, cfg))
     detections, actions = [], []
-    for f in sorted(findings, key=lambda x: x.anchor["time"], reverse=True):
+    contained = {}  # (host, type, target) -> id of the approved/auto-executed action that already holds it
+    if cfg.execute:  # blocks really in force on this machine, even if their events left the lookback window
+        path = cfg.state_dir / "executions.json"
+        for aid, rec in (json.loads(read_text_any(path)) if path.exists() else {}).items():
+            if rec.get("state") == "executed" and rec.get("undo"):
+                contained.setdefault((cfg.host, rec["type"], rec["target"]), aid)
+    for f in sorted(findings, key=lambda x: x.anchor["time"]):  # oldest first, so the first containment wins
         # Keyed on rule + anchor event, not the whole evidence list: evidence can grow later (a script block
         # log arriving after the process event) and must not turn an executed action into a new pending one.
         key = hashlib.sha1(f"{f.rule}|{f.anchor['id']}".encode()).hexdigest()[:8].upper()
         verdict, reasoning, verified = triage(f, store, cfg, key)
         det_id, act_id = f"DET-{key}", f"ACT-{key}"
         status, action_rec = "New", None
-        if verdict == "Malicious" and f.action:
+        ckey = (f.anchor["host"], f.action["type"], f.action["target"]) if f.action else None
+        if verdict == "Malicious" and f.action and contained.get(ckey) and act_id not in decisions:
+            # The same block is already in force (a repeat lookup, a second connection): record it, propose nothing.
+            status = "Responded"
+            reasoning += f" Already contained by {contained[ckey]}; no new action proposed."
+        elif verdict == "Malicious" and f.action:
             risk = f.risk or DEFAULT_RISK[f.action["type"]]
             st, blocked, steps = decide(f.action, verdict, verified, risk, cfg)
             ts = iso(f.anchor["time"])
@@ -568,6 +579,10 @@ def build(store: Store, cfg, decisions: dict):
                 elif d["decision"] == "rollback" and st in ("AutoExecuted", "Approved") and ROLLBACK_AVAILABLE[f.action["type"]]:
                     st = "RolledBack"; audit.append({"at": dts, "actor": "human", "event": "rolled back"})
             status = DET_STATUS.get(st, "Triaged")
+            if st in ("AutoExecuted", "Approved"):
+                contained.setdefault(ckey, act_id)
+            elif st == "RolledBack" and contained.get(ckey) == act_id:
+                del contained[ckey]
             action_rec = {
                 "id": act_id, "detectionId": det_id, "endpointId": f.anchor["host"], "hostname": f.anchor["host"],
                 "source": f.anchor["source"], "type": f.action["type"], "target": f.action["target"],
@@ -595,6 +610,7 @@ def build(store: Store, cfg, decisions: dict):
         if action_rec:
             det["actionId"] = act_id
         detections.append(det)
+    detections.reverse(); actions.reverse()  # newest first, as the console lists them
     # endpoints: a host with no Sysmon telemetry is Degraded, because most rules cannot see it
     eps, has_sysmon = {}, set()
     for e in store.events:
@@ -1085,6 +1101,16 @@ def selftest():
     _, act3, *_ = build(store, cfg, {dns["id"]: [{"decision": "approve", "timestamp": "2026-10-24T09:00:00Z"},
                                                  {"decision": "rollback", "timestamp": "2026-10-24T09:05:00Z"}]})
     assert {a["id"]: a for a in act3}[dns["id"]]["status"] == "RolledBack", "approve then rollback must roll back"
+    # a repeat lookup of a domain that is already blocked is recorded but proposes nothing new
+    store.add(parse_event_xml(_xml(22, {"Image": r"C:\Windows\System32\nslookup.exe", "QueryName": "login-0ffice.net"}, 9,
+                                   t="2026-10-24T08:05:00.000Z"), "live"))
+    approved = {dns["id"]: [{"decision": "approve", "timestamp": "2026-10-24T09:00:00Z"}]}
+    det4, act4, *_ = build(store, cfg, approved)
+    repeat = [d for d in det4 if d["rule"] == "GR-DNS-IOC-001" and d["id"] != dns["detectionId"]]
+    assert len(repeat) == 1 and repeat[0]["proposedAction"] is None and "Already contained by " + dns["id"] in repeat[0]["reasoningSummary"]
+    assert [a["id"] for a in act4 if a["type"] == "BlockDomain"] == [dns["id"]], "one block per target"
+    det5, act5, *_ = build(store, cfg, {dns["id"]: approved[dns["id"]] + [{"decision": "rollback", "timestamp": "2026-10-24T09:10:00Z"}]})
+    assert len([a for a in act5 if a["type"] == "BlockDomain"]) == 2, "after a rollback the repeat may be proposed again"
     selftest_execution(store)
     print(f"selftest OK: {len(det)} detections, {len(act)} actions, {len(eps)} endpoint(s); executors and tuning OK")
 
