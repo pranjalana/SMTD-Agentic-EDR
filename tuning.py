@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import socket
 import sys
 import time
@@ -106,7 +107,7 @@ def apply_config(xml: str, path: Path):
     rc, out = run([str(SYSMON), "-c", str(path)], timeout=60)
     accepted = rc == 0 and "updated" in out.lower()
     last = [l for l in out.splitlines() if l.strip()]
-    return accepted, (last[-1] if last else f"exit code {rc}")
+    return accepted, (last[-1].strip().rstrip(".") if last else f"exit code {rc}")
 
 
 def service_running() -> bool:
@@ -202,12 +203,40 @@ def apply_proposals(changes: list, cfg) -> list:
     return [done.get(c["id"], c) for c in changes] + [r for i, r in done.items() if i not in {c["id"] for c in changes}]
 
 
+def show(st: dict, state_dir: Path):
+    """Human-readable record of the agent's tuning: gap, justification, validation, and the XML it changed."""
+    import difflib
+    print(f"Sysmon logging managed by Grim Reaper since {st.get('baselineAt', '?')} (weak baseline).")
+    print("Now on: " + (", ".join(k for k in SYSMON_KEYS if (st["current"] or {}).get(k)) or "nothing optional"))
+    for rec in sorted(st["changes"].values(), key=lambda r: r["timestamp"]):
+        v = rec["validationResult"] or {}
+        print(f"\n=== {rec['id']}  {rec['status'].upper()}  ({rec['timestamp']}, risk {rec['riskLevel']})")
+        print(f"Gap:        {rec['visibilityGap']}")
+        print(f"Why:        {rec['justification']}")
+        print(f"Validated:  config accepted={v.get('configAccepted')}, service running={v.get('serviceRunning')}")
+        print(f"            {v.get('detail', '')}")
+        print(f"Now sees:   {', '.join(rec['techniquesNowVisible'])}")
+        print(f"Rollback:   python tuning.py --rollback {rec['id']}   (snapshot {rec['rollbackSnapshotId']})")
+        before, after = state_dir / "sysmon" / f"{rec['id']}-before.xml", state_dir / "sysmon" / f"{rec['id']}-after.xml"
+        if before.exists() and after.exists():
+            strip = lambda p: [l for l in p.read_text(encoding="utf-8").splitlines() if not l.startswith("<!--")]
+            diff = [l for l in difflib.unified_diff(strip(before), strip(after), "before", "after", n=0, lineterm="")
+                    if l[:1] in "+-" and not l.startswith(("+++", "---"))]
+            print("Config change (- removed, + added):")
+            for line in diff:
+                # Sysmon reads an empty include list as "log none" and an empty exclude list as "log all"
+                m = re.search(r'<(\w+) onmatch="(include|exclude)"/>', line)
+                note = f"   <- {'logs every' if m.group(2) == 'exclude' else 'logs no'} {m.group(1)} event" if m else ""
+                print("   " + line + note)
+
+
 # ----------------------------------------------------------------- CLI
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--render", choices=["weak", "strong"])
     ap.add_argument("--baseline", action="store_true")
     ap.add_argument("--status", action="store_true")
+    ap.add_argument("--show", action="store_true", help="explain every change the agent made, with the config diff")
     ap.add_argument("--rollback", metavar="TUN-ID")
     ap.add_argument("--state-dir", default=str(STATE_DIR))
     a = ap.parse_args()
@@ -219,6 +248,9 @@ def main():
     if a.status:
         print(json.dumps({"current": st["current"], "changes": {k: (v["status"], v["validationResult"]["detail"])
                                                                 for k, v in st["changes"].items()}}, indent=2))
+        return
+    if a.show:
+        show(st, state_dir)
         return
     if not is_admin():
         sys.exit("run this from an Administrator PowerShell (sysmon -c needs it)")

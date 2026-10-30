@@ -879,9 +879,31 @@ def load_decisions(out: Path) -> dict:
     return history
 
 
+def report_changes(detections, actions, cfg):
+    """Print each new detection and each action status change, so the terminal tells the story live.
+    The first cycle only prints a count: those detections were already in the lookback window."""
+    seen, first = cfg.seen, not cfg.seen
+    acts = {a["id"]: a for a in actions}
+    if first:
+        print(f"[startup] {len(detections)} detection(s) and {len(actions)} action(s) already in the lookback window", flush=True)
+    for d in reversed(detections):  # oldest first
+        if d["id"] not in seen and not first:
+            print(f"[detect] {d['timestamp'][11:19]}Z {d['rule']} {d['verdict']} {d['confidence']:.2f} "
+                  f"{d['technique']['id']} | {short(d['reasoningSummary'], 140)}", flush=True)
+        seen.setdefault(d["id"], None)
+    for a in actions:
+        if seen.get(a["id"]) != a["status"] and not first:
+            note = f" | {a['blockedReason']}" if a["status"] == "BlockedByGuardrail" and a.get("blockedReason") else ""
+            print(f"[action] {a['id']} {a['type']} {short(a['target'], 60)} -> {a['status']} ({a['mode']}, risk {a['riskLevel']}){note}",
+                  flush=True)
+        seen[a["id"]] = a["status"]
+    seen.setdefault("_started", True)
+
+
 def run_cycle(store, cfg, out: Path):
     det, act, eps, stats = build(store, cfg, load_decisions(out))
     apply_executions(act, det, cfg)
+    report_changes(det, act, cfg)
     stats["actionsByStatus"] = {s: sum(1 for a in act if a["status"] == s) for s in ACTION_STATUSES}
     tun = build_tuning(store, cfg, tuning.load_state(cfg.state_dir)["current"] if cfg.apply_tuning else None)
     if cfg.apply_tuning:
@@ -917,6 +939,7 @@ class Cfg:
     apply_tuning: bool = False     # --apply-tuning: apply Low-risk Sysmon proposals for this machine
     host: str = os.environ.get("COMPUTERNAME", "").upper()
     state_dir: Path = executors.STATE_DIR
+    seen: dict = field(default_factory=dict)  # detection/action id -> last printed status (report_changes)
 
 
 def load_files(paths, store, rebase):
@@ -977,16 +1000,21 @@ def main():
         n, nf = load_files(a.evtx, store, a.rebase_time)
         print(f"[replay] {n} events from {nf} file(s)")
     bookmarks = {}  # log -> last EventRecordID read
+    cycle, recent = 0, 0
     while True:
         if a.live:
-            added = 0
             for log in LIVE_LOGS:
                 xmls, bookmarks[log] = fetch_live(log, a.lookback, bookmarks.get(log))
                 for xml in xmls:
-                    added += store.add(parse_event_xml(xml, "live"))
-            print(f"[live] +{added} events", flush=True)
+                    recent += store.add(parse_event_xml(xml, "live"))
         stats = run_cycle(store, cfg, out)
-        print(f"[cycle] events={stats['eventsProcessed']} detections={stats['detections']} actions={stats['actions']}", flush=True)
+        # one heartbeat a minute (and on the first cycle); detections, actions and tuning print as they happen
+        if cycle % max(1, 60 // a.interval) == 0 or not (a.live or a.follow):
+            print(f"[{time.strftime('%H:%M:%S')}] events={stats['eventsProcessed']} (+{recent} new) "
+                  f"detections={stats['detections']} actions={stats['actions']} "
+                  f"pending={stats['actionsByStatus']['PendingApproval']}", flush=True)
+            recent = 0
+        cycle += 1
         if not (a.live or a.follow):
             break
         time.sleep(a.interval)
