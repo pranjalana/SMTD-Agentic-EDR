@@ -854,7 +854,16 @@ EMPTY_RUNS = {"scenarios": [], "runs": [], "comparisons": [], "tuningLink": {"be
 def write_json(path: Path, obj):
     tmp = path.with_suffix(path.suffix + ".tmp")
     tmp.write_text(json.dumps(obj, indent=2), encoding="utf-8")
-    os.replace(tmp, path)
+    # On Windows the swap fails while serve.py is reading the file; retry briefly instead of crashing.
+    for attempt in range(20):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError:
+            if attempt == 19:
+                print(f"[warn] {path.name} was locked; keeping last cycle's copy", flush=True)
+                return
+            time.sleep(0.05)
 
 
 def load_decisions(out: Path) -> dict:
